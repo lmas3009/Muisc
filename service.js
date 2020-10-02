@@ -10,7 +10,6 @@ module.exports = async (data) => {
     } else if(data.type === 'remote-stop') {
         TrackPlayer.stop();
     } else if(data.type === 'remote-seek') {
-        console.warn(data.position);
         TrackPlayer.seekTo(data.position);
     }
 };

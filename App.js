@@ -13,6 +13,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Music_player from './components/ViewScreens/Music_play'
 import TrackPlayer from 'react-native-track-player'
+import Typescreen from './components/ViewScreens/TypeView/Typescreens'
+import Viewscreen from './components/ViewScreens/TypeView/viewscreen'
 
 
 const Tab  = createBottomTabNavigator();
@@ -101,6 +103,8 @@ function App() {
         <Stack.Screen name="Home" component={Home} options={{headerShown: false}}/>
         <Stack.Screen name="Bottomnav" component={Bottomnav} options={{headerShown: false}}/>
         <Stack.Screen name="Music_player" component={Music_player} options={{headerShown: false}} />
+        <Stack.Screen name="Typescreen" component={Typescreen} options={{headerShown: false}} />
+        <Stack.Screen name="Viewscreen" component={Viewscreen} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

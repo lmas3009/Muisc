@@ -9,9 +9,11 @@ export default class SliderComp extends React.Component {
 
     constructor(props){
         super (props);
+        var url = this.props.url1
         this.state = {
             value:0
         }
+        alert(url)
         setInterval(() => {
             this.setState({
                 value:this.state.value+1
@@ -37,6 +39,7 @@ export default class SliderComp extends React.Component {
 
   //components
  render(){
+
     return (
         <View style={styles.container}>
           <Slider key={1}

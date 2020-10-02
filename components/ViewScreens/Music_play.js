@@ -77,6 +77,23 @@ export default class MusicPlayer extends React.Component {
     });
   });
   
+ } 
+ playMusic()
+ { 
+     this.setState({
+         ver:true
+     })
+     alert("hi")
+   TrackPlayer.play();
+ }
+
+ pushMusic(){
+     this.setState({
+         ver:false
+     })
+     
+     alert("hsfdi")
+   TrackPlayer.pause();
  }
  
 
@@ -84,14 +101,14 @@ export default class MusicPlayer extends React.Component {
     var data=[];
         if(this.state.ver===false){
             data.push(
-              <TouchableOpacity onPress={()=>this.playMusic()} style={{height: 70,width: 70,backgroundColor:'#f6355d',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
+              <TouchableOpacity onPress={this.playMusic} style={{height: 70,width: 70,backgroundColor:'#f6355d',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
                 <Feather name="play"  style={{marginLeft:3}} color="white" size={35}/>
               </TouchableOpacity>
             )
         }
         else{
             data.push(
-              <TouchableOpacity onPress={()=>this.pushMusic()} style={{height:70,width: 70,backgroundColor:'#f6355d',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
+              <TouchableOpacity onPress={this.pushMusic  } style={{height:70,width: 70,backgroundColor:'#f6355d',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
                 <Feather name="pause"  color='white' size={35} />
               </TouchableOpacity>
             )
@@ -165,11 +182,24 @@ export default class MusicPlayer extends React.Component {
         <View key={5} style={{marginLeft: 20}}/> 
           <MaterialIcons name="forward-30" size={24} color="black" />
       </View> */}
-       <Controller />
-      
-      
-     
+       <MaterialIcons name="replay-30" size={24} color="black" />
+        <View key={1} style={{marginLeft: 20}}/> 
+        <View key={2} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
+          {/*<MaterialCommunityIcons name="step-backward" size={35} onPress={()=>alert("f")}  color="black" />*/}
+          <FontAwesome5 name="backward" size={30} color="black" />
+        </View>
+        <View key={3} style={{marginLeft: 20}}/> 
+      {data}
+        <View style={{marginLeft: 20}}/>
+          <View key={4} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
+            {/*<MaterialCommunityIcons name="step-forward" size={35} color="black" onPress={()=>alert("f")} />*/}
+            <FontAwesome5 name="forward" size={30} color="black" />
+          </View>
+        <View key={5} style={{marginLeft: 20}}/> 
+          <MaterialIcons name="forward-30" size={24} color="black" />
       </View>
+      
+      
 
       </ImageBackground>
       {/*<Image

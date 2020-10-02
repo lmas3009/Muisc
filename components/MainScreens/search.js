@@ -106,7 +106,7 @@ class Search extends Component {
               keyExtractor = {(item) => item.id}
               data = {Song_type}
               renderItem = {({item}) => (
-                <TouchableOpacity onPress={()=> alert(item.name)} activeOpacity={0.5}>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate('Typescreen',{Name: item.name})} activeOpacity={0.5}>
                   <View style={[styles.card1,{borderWidth: 1,borderColor:this.state.textcolor}]}>
                     <ImageBackground source={item.bg} style={styles.card} imageStyle={{ borderRadius: 10}} >
                       <View style={{backgroundColor: "white",height: 25,alignItems:'center',justifyContent:'center',borderBottomRightRadius: 7}}>
