@@ -58,19 +58,27 @@ export default class Typescreen extends React.Component{
             });
         return (
         <View style={{justifyContent: 'center',alignItems: 'center',backgroundColor:this.state.bdcolor,flex:1}}>
-            <FlatList
+            {this.state.dataSource==null ?
+                <View style={{justifyContent:'center',alignItems:'center'}}>
+                    <View style={styles.loader}>
+                        <ActivityIndicator size="large" color={this.state.textcolor}/>
+                    </View>
+                    <Text>No Data Found</Text>
+                </View>
+                :<FlatList
               numColumns = {2}
               keyExtractor = {(item) => item.id}
               data = {this.state.dataSource}
               renderItem = {({item}) => (
                 <View style={[styles.decoration,{borderColor: this.state.textcolor}]}>
-                  <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.title})}>
+                  <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.title,Artwork: item.artwork})}>
                       <Image source={{uri: item.artwork}} style={styles.image1}/>
                       <Text style={[styles.text,{color:this.state.textcolor}]}>{item.title}</Text>
                   </TouchableOpacity>
                 </View>
               )}
               />
+    }
               {/* {this.state.loading &&
                 <View style={styles.loader}>
                     <ActivityIndicator size="large" color={this.state.textcolor} />
