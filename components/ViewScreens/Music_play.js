@@ -12,6 +12,7 @@ import TrackPlayer , {
   TrackPlayerEvents,
   STATE_PLAYING,
   Event,
+  useTrackPlayerProgress,
 } from 'react-native-track-player';
 
 import Controller from './Controller';
@@ -41,6 +42,7 @@ export default class MusicPlayer extends React.Component {
     const title = this.props.route.params.title;
     const artist = this.props.route.params.artist;
     const id = this.props.route.params.id;
+    
    this.setState({
      artwork: artwork,
      artist: artist,
@@ -61,7 +63,7 @@ export default class MusicPlayer extends React.Component {
     
     TrackPlayer.updateOptions({
       ratingType: TrackPlayer.RATING_5_STARS,
-      stopWithApp: false,
+      stopWithApp: true,
       capabilities: [
           TrackPlayer.CAPABILITY_PLAY,
           TrackPlayer.CAPABILITY_PAUSE,
@@ -98,6 +100,7 @@ export default class MusicPlayer extends React.Component {
  
 
   render() {
+    
     var data=[];
         if(this.state.ver===false){
             data.push(
@@ -164,7 +167,6 @@ export default class MusicPlayer extends React.Component {
           <MaterialCommunityIcons name="heart" size={30} color="red" onPress={()=>this.setState({like:false})} />
         }
                 </View>*/}
-     <Slider url1={this.state.url}/>
       {/* <View style={{flexDirection:"row",justifyContent:'space-between',alignItems:'center'}}>
       <MaterialIcons name="replay-30" size={24} color="black" />
         <View key={1} style={{marginLeft: 20}}/> 
@@ -182,26 +184,29 @@ export default class MusicPlayer extends React.Component {
         <View key={5} style={{marginLeft: 20}}/> 
           <MaterialIcons name="forward-30" size={24} color="black" />
       </View> */}
-       <MaterialIcons name="replay-30" size={24} color="black" />
+       {/* <MaterialIcons name="replay-30" size={24} color="black" />
         <View key={1} style={{marginLeft: 20}}/> 
-        <View key={2} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
+        <View key={2} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}> */}
           {/*<MaterialCommunityIcons name="step-backward" size={35} onPress={()=>alert("f")}  color="black" />*/}
-          <FontAwesome5 name="backward" size={30} color="black" />
+          {/* <FontAwesome5 name="backward" size={30} color="black" />
         </View>
         <View key={3} style={{marginLeft: 20}}/> 
       {data}
         <View style={{marginLeft: 20}}/>
-          <View key={4} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
+          <View key={4} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}> */}
             {/*<MaterialCommunityIcons name="step-forward" size={35} color="black" onPress={()=>alert("f")} />*/}
-            <FontAwesome5 name="forward" size={30} color="black" />
+            {/* <FontAwesome5 name="forward" size={30} color="black" />
           </View>
         <View key={5} style={{marginLeft: 20}}/> 
           <MaterialIcons name="forward-30" size={24} color="black" />
-      </View>
-      
-      
-
+       */}
+       </View>
+       <View style={{marginTop: 150}}/>
       </ImageBackground>
+      <View style={{justifyContent:'center',alignItems:'center'}}>
+      
+       <Controller url1={this.state.url}/>
+      </View>
       {/*<Image
         style={{height: 200,width: 250,borderRadius: 10,resizeMode:'stretch'}}
           source={{

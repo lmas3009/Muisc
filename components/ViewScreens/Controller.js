@@ -14,6 +14,7 @@ import TrackPlayer, {
     Event,
   } from 'react-native-track-player';
 import { set } from 'react-native-reanimated';
+import Slider from './Slider'
 
   
 
@@ -24,31 +25,39 @@ export default class Controller extends React.Component {
   constructor(props){
       super(props);
       this.state = {
-          ver:true
+          ver:false,
+          url: ''
       }
+  }
+
+  componentDidMount(){
+    var url = this.props.url1
+        this.setState({
+          url:url
+        })
   }
   
     playMusic()
     { 
         this.setState({
-            ver:true
+            ver:false
         })
-        alert("hi")
       TrackPlayer.play();
     }
   
     pushMusic(){
         this.setState({
-            ver:false
+            ver:true
         })
         
-        alert("hsfdi")
       TrackPlayer.pause();
     }
 
 
     render(){
         var data=[];
+        
+        
         try{
             if(this.state.ver===false){
                 data.push(
@@ -69,27 +78,55 @@ export default class Controller extends React.Component {
             alert(error)
         }
   return (
-    <View style={{alignItems:'center',justifyContent:'center'}}>
-      {data}
-      <View style={styles.container}>
-      <MaterialIcons name="replay-30" size={24} color="black" />
-        <View key={1} style={{marginLeft: 20}}/> 
-        <View key={2} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
-          {/*<MaterialCommunityIcons name="step-backward" size={35} onPress={()=>alert("f")}  color="black" />*/}
-          <FontAwesome5 name="backward" size={30} color="black" />
-        </View>
-        <View key={3} style={{marginLeft: 20}}/> 
+    // <View style={{alignItems:'center',justifyContent:'center'}}>
+    //   {data}
+    //   <View style={styles.container}>
+    //   <MaterialIcons name="replay-30" size={24} color="black" />
+    //     <View key={1} style={{marginLeft: 20}}/> 
+    //     <View key={2} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
+    //       {/*<MaterialCommunityIcons name="step-backward" size={35} onPress={()=>alert("f")}  color="black" />*/}
+    //       <FontAwesome5 name="backward" size={30} color="black" />
+    //     </View>
+    //     <View key={3} style={{marginLeft: 20}}/> 
       
-        <View style={{marginLeft: 20}}/>
-          <View key={4} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
-            {/*<MaterialCommunityIcons name="step-forward" size={35} color="black" onPress={()=>alert("f")} />*/}
-            <FontAwesome5 name="forward" size={30} color="black" />
-          </View>
-        <View key={5} style={{marginLeft: 20}}/> 
-          <MaterialIcons name="forward-30" size={24} color="black" />
-      </View>
+    //     <View style={{marginLeft: 20}}/>
+    //       <View key={4} style={{height:50,width: 50,backgroundColor:'#f6f7f8',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
+    //         {/*<MaterialCommunityIcons name="step-forward" size={35} color="black" onPress={()=>alert("f")} />*/}
+    //         <FontAwesome5 name="forward" size={30} color="black" />
+    //       </View>
+    //     <View key={5} style={{marginLeft: 20}}/> 
+    //       <MaterialIcons name="forward-30" size={24} color="black" />
+    //   </View>
           
-      </View>
+    //   </View>
+<View>
+              <View style={{justifyContent:'center',alignItems:'center'}}>
+              <View style={{marginTop: 10,width:200,justifyContent:'space-around',flexDirection:'row',alignItems:'center'}}>
+                <Feather name="share-2" size={24} color="black" />
+                  <Feather name="download" size={24} color="black" />
+                  <Feather name="heart" size={24} color="black" />
+                </View>
+                </View>
+                
+                <View style={{alignItems:'center'}}>
+                <View style={{marginTop:50}}>
+                <Slider url1={this.state.url}/>
+                </View>
+                <View style={{marginTop: 20 ,flexDirection:'row',width:250,justifyContent:'space-evenly',alignItems:'center'}}>
+                
+                <FontAwesome5 name="backward" size={24} color="black" />
+                <View style={{height:50,width:50,background:'lightgrey',alignItems:'center',justifyContent:'center',borderRadius:10}}>
+                {this.state.ver?<FontAwesome5 name="play" onPress={()=>{
+                  this.playMusic() }} size={24} color="black" />
+                :
+                <FontAwesome5 name="pause" onPress={()=>{
+                  this.pushMusic()
+                }} size={24} color="black" />}
+                </View>
+                <FontAwesome5 name="forward" size={24} color="black" />
+                </View>
+                </View>
+                </View>
   );
 }
 }
