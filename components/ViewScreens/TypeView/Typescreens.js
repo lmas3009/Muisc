@@ -55,6 +55,7 @@ export default class Typescreen extends React.Component{
             })
             .catch(error => {
                 console.log(error);
+                alert(error)
             });
         return (
         <View style={{justifyContent: 'center',alignItems: 'center',backgroundColor:this.state.bdcolor,flex:1}}>
@@ -63,7 +64,7 @@ export default class Typescreen extends React.Component{
                     <View style={styles.loader}>
                         <ActivityIndicator size="large" color={this.state.textcolor}/>
                     </View>
-                    <Text>No Data Found</Text>
+                    <Text>Fetching Data</Text>
                 </View>
                 :<FlatList
               numColumns = {2}

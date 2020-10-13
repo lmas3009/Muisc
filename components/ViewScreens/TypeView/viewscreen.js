@@ -48,7 +48,7 @@ export default class Viewscreen extends React.Component{
                     <View style={styles.loader}>
                         <ActivityIndicator size="large" color="black"/>
                     </View>
-                    <Text>No Data Found</Text>
+                    <Text>Fetching Data</Text>
                 </View>
                 :
                 <FlatList
