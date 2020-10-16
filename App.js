@@ -15,6 +15,7 @@ import Music_player from './components/ViewScreens/Music_play'
 import TrackPlayer from 'react-native-track-player'
 import Typescreen from './components/ViewScreens/TypeView/Typescreens'
 import Viewscreen from './components/ViewScreens/TypeView/viewscreen'
+import Musicplayer from './components/ViewScreens/MusicPlay'
 
 
 const Tab  = createBottomTabNavigator();
@@ -105,6 +106,7 @@ function App() {
         <Stack.Screen name="Music_player" component={Music_player} options={{headerShown: false}} />
         <Stack.Screen name="Typescreen" component={Typescreen} options={{headerShown: false}} />
         <Stack.Screen name="Viewscreen" component={Viewscreen} options={{headerShown: false}} />
+        <Stack.Screen name="Musicplayer" component={Musicplayer} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
