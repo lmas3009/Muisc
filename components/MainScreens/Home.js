@@ -193,14 +193,7 @@ class Home extends Component {
                     data = {this.state.dataSource}
                     renderItem = {({item}) => (
                       <View style={{margin: 5}}>
-                        <TouchableOpacity style={[styles.dailymix1,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate("Music_player",{
-                            id: item.id,
-                            url: item.url,
-                            artwork: item.artwork,
-                            title: item.title,
-                            artist: item.artist
-                          }
-                          )}>
+                        <TouchableOpacity style={[styles.dailymix1,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{data: this.state.dataSource,id: item.id})}>
                           <View style={{flexDirection:'row',alignItems:'center'}}>
                             <Image source={{uri: item.artwork}} style={styles.image2}/>
                             <View style={{flex:1,alignItems:'center',justifyContent: 'space-between',flexDirection:'row'}}>

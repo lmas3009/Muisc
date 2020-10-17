@@ -18,7 +18,6 @@ import TrackPlayer , {
 import Controller from './Controller';
 import Slider from './Slider'
 
-
 export default class MusicPlayer extends React.Component {
 
     constructor(props) {  
@@ -44,14 +43,9 @@ export default class MusicPlayer extends React.Component {
  async componentDidMount(){
    const name = this.props.route.params.Name;
    const data = this.props.route.params.data
-   const id1 = this.props.route.params.id;
-   console.log(id1)
     
     this.setState({
-      datasource:data,
-      // artist: data[this.state.songindex].artist,
-      // artwork: data[this.state.songindex].artwork,
-      // title: data[this.state.songindex].title
+      datasource:data
     })
     var track = {
       "id": "1",
@@ -64,56 +58,33 @@ export default class MusicPlayer extends React.Component {
     console.log('Player ready');
     // TrackPlayer.add(JSON.stringify(data));
     TrackPlayer.add(data)
+    TrackPlayer.play()
     this.setState({
       isPlayerReady:true
     })
     TrackPlayer.updateOptions({
       ratingType: TrackPlayer.RATING_5_STARS,
-      stopWithApp: false,
+      stopWithApp: true,
       capabilities: [
           TrackPlayer.CAPABILITY_PLAY,
           TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_STOP
+          TrackPlayer.CAPABILITY_JUMP_FORWARD,
+          TrackPlayer.CAPABILITY_JUMP_BACKWARD,
       ],
-      
-      compactCapabilities: [
-        TrackPlayer.CAPABILITY_PLAY,
-        TrackPlayer.CAPABILITY_PAUSE,
-        TrackPlayer.CAPABILITY_STOP
-      ]
   
     });
-    
-    if(id1==0){
+    const trackid = (await TrackPlayer.getCurrentTrack())-1
+    if(trackid !== this.state.index){
       this.setState({
-        index: id1,
-        artist: this.state.datasource[id1].artist,
-        artwork: this.state.datasource[id1].artwork,
-        title: this.state.datasource[id1].title
+        songindex: trackid
       })
-      TrackPlayer.play()
-    }
-    else{
-      TrackPlayer.skip(this.state.datasource[id1-1].id)
-      .then((_) => {
-        this.setState({
-          index: id1-1,
-          artist: this.state.datasource[id1-1].artist,
-          artwork: this.state.datasource[id1-1].artwork,
-          title: this.state.datasource[id1-1].title
-        })
-        console.log(id1)
-        TrackPlayer.play();
-        console.log("track changes")
-      })
-      .catch((e) => {
-        console.log("erroe")
-      })
+      if (trackid > this.state.index) {
+        goNext();
+      } else {
+        goPrv();
+      }
     }
   });
-
-    
-  
  } 
  
 playMusic()
@@ -132,61 +103,17 @@ pushMusic(){
   TrackPlayer.pause();
 }
 
-goNext(){
-  try{
-    TrackPlayer.skip(this.state.datasource[this.state.index].id)
-  .then((_) => {
-    console.log("track changes")
-    this.setState({
-      index: this.state.index+1,
-      artist: this.state.datasource[this.state.index].artist,
-      artwork: this.state.datasource[this.state.index].artwork,
-      title: this.state.datasource[this.state.index].title
-    })
-    TrackPlayer.play();
+goNext= async () => {
+  this.setState({
+    index: this.state.index+1
   })
-  .catch((e) => {
-    console.log("erroe")
-  })
-  }
-  catch(err){
-    this.setState({
-      index: 0,
-      songindex: 0
-    })
-  }
-  
 }
 
-goPrv(){
-  try{
-    console.log(this.state.index)
-    TrackPlayer.skip(this.state.datasource[this.state.index].id)
-      .then((_) => {
-        console.log("track changes")
-        this.setState({
-          index: this.state.index-1,
-          artist: this.state.datasource[this.state.index].artist,
-          artwork: this.state.datasource[this.state.index].artwork,
-          title: this.state.datasource[this.state.index].title
-        })
-        TrackPlayer.play();
-      })
-      .catch((e) => {
-        console.log("erroe")
-      })
-  }
-  catch(err){
-    console.log("error")
-    this.setState({
-      index: 0,
-      songindex:0
-
-    })
-  }
+goPrv = async () => {
+  this.setState({
+    index: this.state.index-1
+  })
 }
-
-
 
 
   render() {
@@ -229,7 +156,7 @@ goPrv(){
       <View style={{marginTop: "80%"}}/> 
       {/*<Text style={{color:"white",fontSize: 30,fontWeight:'bold',marginBottom: 20}}>NOW PLAYING</Text>*/}
       <Image
-                style={{height: 200,width: 250,borderRadius: 10,resizeMode:'stretch'}}
+                style={{height: 200,width: 250,borderRadius: 20,resizeMode:'stretch'}}
                   source={{
                     uri:
                       this.state.artwork,
@@ -304,7 +231,7 @@ goPrv(){
       
       <View>
               <View style={{justifyContent:'center',alignItems:'center'}}>
-              <View style={{marginTop: 20,width:200,justifyContent:'space-around',flexDirection:'row',alignItems:'center'}}>
+              <View style={{marginTop: 10,width:200,justifyContent:'space-around',flexDirection:'row',alignItems:'center'}}>
                 <Feather name="share-2" size={24} color="black" />
                   <Feather name="download" size={24} color="black" />
                   <Feather name="heart" size={24} color="black" />
@@ -312,10 +239,9 @@ goPrv(){
                 </View>
                 
                 <View style={{alignItems:'center'}}>
-                <View style={{marginTop:30}}>
+                <View style={{marginTop:50}}>
                 <Slider url1={this.state.url}/>
                 </View>
-                <View style={{marginTop: 20}}/>
                 <View style={{marginTop: 20 ,flexDirection:'row',width:250,justifyContent:'space-evenly',alignItems:'center'}}>
                 
                 <FontAwesome5 name="backward" onPress={()=>{

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet,ProgressBar} from 'react-native';
 import Slider1 from '@react-native-community/slider';
 import Slider  from 'react-native-slider'
 
@@ -10,18 +10,43 @@ import TrackPlayer,{
 } from 'react-native-track-player';
 import { render } from 'react-dom';
 
-export default function ProgressBar() {
-  const progress = useTrackPlayerProgress();
+export default class ProgressBar1 extends TrackPlayer.ProgressComponent {
+  // const progress = useTrackPlayerProgress();
 
+  formatTime = (secs) => {
+    let minutes = Math.floor(secs / 60);
+    let seconds = Math.ceil(secs - minutes * 60);
+
+    if (seconds < 10) seconds = `0${seconds}`;
+
+    return `${minutes}:${seconds}`;
+  };
+
+  handleChange = (val) => {
+    TrackPlayer.seekTo(val);
+  };
+
+  render(){
   return (
     <View style={styles.progress2}>
       <View style={styles.progress1}>
-      <Text>{progress.position}</Text>
+      <Text>{this.formatTime(this.state.position)}</Text>
       
-      <Text>{progress.duration}</Text>
+      <Text>{this.formatTime(this.state.duration)}</Text>
       </View>
-      <View style={styles.progress}>
-      <View style={{ flex: progress.position,height: 10, backgroundColor: "red",borderRadius: 5 }} />
+      <View style={{marginTop: 5}}/>
+          <Slider1
+            style={{width: 320}}
+            minimumValue={0}
+            value={this.state.position}
+            maximumValue={this.state.duration}
+            minimumTrackTintColor="#000000"
+            onSlidingComplete={this.handleChange}
+            maximumTrackTintColor="grey"
+            thumbTintColor="red"
+          />
+      {/* <View style={styles.progress}>
+      <View style={{ height: 10, backgroundColor: "red",borderBottomRightRadius: 5,borderTopRightRadius: 5,}} />
       <View
         style={{
           flex: progress.duration - progress.position,
@@ -30,10 +55,12 @@ export default function ProgressBar() {
           borderRadius: 5
         }}
       />
+    
       </View>
-      
+       */}
     </View>
   );
+      }
 }
 
 
@@ -64,10 +91,7 @@ const styles = StyleSheet.create({
   progress: {
     height: 10,
     width: 300,
-    marginTop: 10,
-    flexDirection: "row",
-    borderRadius: 10,
-    backgroundColor:'lightgrey',
+    backgroundColor:'red'
   },
   title: {
     marginTop: 10

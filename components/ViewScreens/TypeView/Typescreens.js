@@ -72,7 +72,7 @@ export default class Typescreen extends React.Component{
               data = {this.state.dataSource}
               renderItem = {({item}) => (
                 <View style={[styles.decoration,{borderColor: this.state.textcolor}]}>
-                  <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{title: item.title})}>
+                  <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.title,Artwork: item.artwork})}>
                       <Image source={{uri: item.artwork}} style={styles.image1}/>
                       <Text style={[styles.text,{color:this.state.textcolor}]}>{item.title}</Text>
                   </TouchableOpacity>

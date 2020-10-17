@@ -19,22 +19,18 @@ export default class Viewscreen extends React.Component{
     render(){
         
          const name = this.props.route.params.Name  
-         const Artwork = this.props.route.params.Artwork 
-         const title_name = name.split(" ").join(""); 
-        axios.get("https://music-application-ftd.000webhostapp.com/Bollywood/"+title_name+".php")
+          const Artwork = this.props.route.params.Artwork 
+        //  const title_name = name.split(" ").join(""); 
+        axios.get("https://music-application-ftd.000webhostapp.com/Bollywood/"+name.split(" ").join("")+".php")
             .then(response => {
-                setTimeout(() => {
                     this.setState({
                     dataSource: response.data,
                     lodaing : false
                     })
-                }, 2000) 
             })
             .catch(error => {
-                console.log(error);
+                alert(error);
             });
-            
-            
         return(
             <View style={{backgroundColor:'#ececec',flex:1}}>
                 <Image style={{height: '35%',width: '100%',borderBottomLeftRadius: 50,borderBottomRightRadius: 50}}
@@ -51,12 +47,18 @@ export default class Viewscreen extends React.Component{
                     <Text>Fetching Data</Text>
                 </View>
                 :
+                <View>
+                    <View style={{alignItems:'center',margin: 10}}>
+                        <TouchableOpacity style={{height: 45,width: 100,backgroundColor:'red',alignItems:'center',justifyContent:'center',borderRadius: 10,}} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: name,data: this.state.dataSource,id: 0})}>
+                            <Text style={{color:'white',fontSize: 20,fontWeight:'bold'}}>Play</Text>
+                        </TouchableOpacity>
+                    </View>
                 <FlatList
                     keyExtractor = {(item) => item.id}
                     data = {this.state.dataSource}
                     renderItem = {({item}) => (
                         <View style={[styles.decoration,{borderColor: this.state.textcolor}]}>
-                        <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.title})}>
+                        <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: name,data: this.state.dataSource,id: item.id})}>
                         <View style={{flexDirection:'row',margin: 5,alignItems:'center'}}>
                                 <Image source={{uri: item.artwork}} style={styles.image1}/>
                                 <View style={{flex:1,alignItems:'center',justifyContent: 'space-between',flexDirection:'row'}}>
@@ -95,6 +97,7 @@ export default class Viewscreen extends React.Component{
                         </View>
                     )}
                     />
+                    </View>
                 }
             </View>
         )
