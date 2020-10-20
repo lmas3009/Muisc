@@ -1,12 +1,30 @@
 import React, { Component } from 'react';
 import { View, Text ,Button,Image,StyleSheet,TextInput,TouchableOpacity} from 'react-native';
 import Applogo from '../../assets/applogo.png'
+import Firebase from '../Firebase'
 
 
 export default class Signin extends Component {
 
   constructor(props) {
     super(props);
+    this.state={
+        email:'',
+        password:''
+    }
+  }
+  SignIn=(email,password) =>{
+      try{
+          Firebase
+          .auth()
+          .signInWithEmailAndPassword(email,password)
+          .then(user => {
+              console.log(user)
+              this.props.navigation.navigate("Bottomnav")
+          })
+      }catch(err){
+          console.log(err)
+      }
   }
 
   render() {
@@ -22,6 +40,11 @@ export default class Signin extends Component {
                     placeholderTextColor="grey"
                     keyboardType='email-address'
                     underlineColorAndroid='transparent'
+                    onChangeText={(value)=>{
+                        this.setState({
+                            email:value
+                        })
+                    }}
                     />
             </View>
             <View style={styles.textinput2}>
@@ -29,12 +52,16 @@ export default class Signin extends Component {
                     style={styles.input}
                     placeholder="Password..."
                     placeholderTextColor="grey"
-                    secureTextEntry={true}
+                    secureTextEntry={true}onChangeText={(value)=>{
+                        this.setState({
+                            password:value
+                        })
+                    }}
                     />
             </View>
         </View>
         <View style={{marginTop: 50}}>
-        <TouchableOpacity onPress={()=>this.props.navigation.navigate("Bottomnav")}>
+        <TouchableOpacity onPress={()=>this.SignIn(this.state.email,this.state.password)}>
                 <View style={styles.loginbtn}>
                     <Text style={styles.text}>Login</Text>
                 </View>

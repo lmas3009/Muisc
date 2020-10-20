@@ -1,8 +1,53 @@
 import React, { Component } from 'react'
 import { View, Text ,Button,Image,StyleSheet,TextInput,TouchableOpacity} from 'react-native';
 import Applogo from '../../assets/applogo.png'
+import Firebase from '../Firebase'
 
 export default class Nextbtn extends Component {
+
+
+    constructor(props) {
+        super(props);
+        this.state={
+            email:'',
+            password:'',
+            username:''
+        }
+      }
+    
+    componentDidMount(){
+        const email = this.props.route.params.email;
+        const password = this.props.route.params.password
+        this.setState({
+            email:email,
+            password:password
+        })
+        
+      }
+
+      Siginup=(email,password,username)=>{
+          try{
+            Firebase
+              .auth()
+              .createUserWithEmailAndPassword(email,password)
+              .then(user => {
+                  console.log(user)
+                  var email1 = email.split("@").join("_")
+                  var email2 = email1.split(".").join("-")
+                  console.log(email2.toLowerCase())
+                  Firebase.database().ref().child("UserDetails").child(email2.toLowerCase()).set({
+                      Email:email,
+                      Username:username
+                  })
+                  this.props.navigation.navigate("Bottomnav")
+              })
+          }catch(err){
+              console.log(err.toString(err))
+          }
+      }
+
+
+
   render() {
     return (
       <View style={styles.container}>
@@ -13,10 +58,16 @@ export default class Nextbtn extends Component {
                     style={styles.input}
                     placeholder="Username..."
                     placeholderTextColor="grey"
+                    maxLength={8}
+                    onChangeText={(value)=>{
+                        this.setState({
+                            username:value
+                        })
+                    }}
                     />
             </View>
         <View style={{marginTop: 50}}>
-        <TouchableOpacity onPress={()=>this.props.navigation.navigate("Bottomnav")}>
+        <TouchableOpacity onPress={()=>this.Siginup(this.state.email,this.state.password,this.state.username)}>
                 <View style={styles.loginbtn}>
                     <Text style={styles.text}>Create Account</Text>
                 </View>

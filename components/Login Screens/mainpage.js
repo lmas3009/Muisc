@@ -9,6 +9,7 @@ export default class MainPage extends Component {
     constructor(props){
       super(props);
     }
+
   render() {
     const { navigate } = this.props.navigation;
     return (
@@ -37,7 +38,7 @@ export default class MainPage extends Component {
           title="Sign In Using Email"
           onPress={()=>{
             try {
-                return navigate('Bottomnav')
+                return navigate('Sigin')
             } catch (error) {
                 console.log(error)
             }

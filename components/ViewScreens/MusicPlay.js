@@ -17,6 +17,7 @@ import TrackPlayer , {
 
 import Controller from './Controller';
 import Slider from './Slider'
+import Firebase from '../Firebase'
 
 
 export default class MusicPlayer extends React.Component {
@@ -43,10 +44,17 @@ export default class MusicPlayer extends React.Component {
  
  async componentDidMount(){
    const name = this.props.route.params.Name;
+   const artwork = this.props.route.params.Artwork;
    const data = this.props.route.params.data
    const id1 = this.props.route.params.id;
    console.log(id1)
-    
+   var email = Firebase.auth().currentUser.email
+    var email1 = email.split("@").join("_")
+    var email2 = email1.split(".").join("-")
+    Firebase.database().ref().child(email2).child("Recent Played").child(name).update({
+      Name:name,
+      Artwork:artwork
+    })
     this.setState({
       datasource:data,
       // artist: data[this.state.songindex].artist,
@@ -83,6 +91,7 @@ export default class MusicPlayer extends React.Component {
       ]
   
     });
+    
     
     if(id1==0){
       this.setState({
@@ -318,20 +327,28 @@ goPrv(){
                 <View style={{marginTop: 20}}/>
                 <View style={{marginTop: 20 ,flexDirection:'row',width:250,justifyContent:'space-evenly',alignItems:'center'}}>
                 
-                <FontAwesome5 name="backward" onPress={()=>{
+                <TouchableOpacity style={{height:50,width:50,backgroundColor:'lightgrey',borderRadius:10,alignItems:'center',justifyContent:'center'}} onPress={()=>{
                   this.goPrv()
-                }} size={24} color="black" />
+                }}>
+                <FontAwesome5 name="backward"  size={24} color="black" />
+                </TouchableOpacity>
                 <View style={{height:50,width:50,background:'lightgrey',alignItems:'center',justifyContent:'center',borderRadius:10}}>
-                {this.state.ver?<FontAwesome5 name="play" onPress={()=>{
-                  this.playMusic() }} size={24} color="black" />
+                {this.state.ver?
+                <TouchableOpacity style={{height:70,width:70,backgroundColor:'#5e4ba8',borderRadius:40,alignItems:'center',justifyContent:'center'}} onPress={()=>{
+                  this.playMusic()
+                }}>
+                <FontAwesome5 name="play" size={24} color="white" /></TouchableOpacity>
                 :
-                <FontAwesome5 name="pause" onPress={()=>{
+                <TouchableOpacity style={{height:70,width:70,backgroundColor:'#5e4ba8',borderRadius:40,alignItems:'center',justifyContent:'center'}} onPress={()=>{
                   this.pushMusic()
-                }} size={24} color="black" />}
+                }}>
+                <FontAwesome5 name="pause"  size={24} color="white" /></TouchableOpacity>}
                 </View>
-                <FontAwesome5 name="forward" onPress={()=>{
+                <TouchableOpacity style={{height:50,width:50,backgroundColor:'lightgrey',borderRadius:10,alignItems:'center',justifyContent:'center'}} onPress={()=>{
                   this.goNext()
-                }} size={24} color="black" />
+                }}>
+                <FontAwesome5 name="forward"  size={24} color="black" />
+                </TouchableOpacity>
                 </View>
                 </View>
                 </View>

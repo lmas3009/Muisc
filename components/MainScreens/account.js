@@ -1,6 +1,8 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React, { Component } from 'react'
 import { Text, View ,StyleSheet,ScrollView,TouchableOpacity,Switch} from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Firebase from '../Firebase'
 
 
 class Account extends Component {
@@ -9,6 +11,7 @@ class Account extends Component {
     super(props);
     this.state = {
       day:'',
+      username:'',
       bdcolor:'',
       textcolor:'',
       textcolor1:'',
@@ -16,16 +19,65 @@ class Account extends Component {
       switchValue1:false,
       isEnabled:false,
       isEnabled1:false,
+      email2:'',
+      Notification:false,
+      Update: false,
+      Notification1:false,
+      Update1: true
     }
   }
 
-  toggleSwitch = (value) => {
-    this.setState({switchValue: value,isEnabled: value})
+  componentDidMount(){
+    var email = Firebase.auth().currentUser.email
+    var email1 = email.split("@").join("_")
+    var email2 = email1.split(".").join("-")
+    
+    var username = 'None'
+    var Notifcation = 'no'
+    var Update = 'no'
+    Firebase.database().ref().child("UserDetails").child(email2).on('value', function(snapshot) {
+      username = snapshot.val().Username
+      // if(snapshot.val().Notifcation){
+      //   Notifcation = true
+      // }
+      // if(snapshot.val().Update){
+      //   Update = tre
+      // } 
+      Notifcation = snapshot.val().Notifcation
+      Update = snapshot.val().Update
+    })
+    this.setState({
+      email2:email2,
+      username:username,
+      Notification:Notifcation,
+      Update:Update
+    })
+
+  }
+
+  
+
+  toggleSwitch = (value,name) => {
+    this.setState({switchValue: value,isEnabled: value,Notification:value})
+    console.log(name,value)
+    Firebase.database().ref().child("UserDetails").child(this.state.email2).update({
+      Notifcation: value
+    })
  }
  
- toggleSwitch1 = (value) => {
-  this.setState({switchValue1: value,isEnabled1: value})
+ toggleSwitch1 = (value,name) => {
+  this.setState({switchValue1: value,isEnabled1: value,Update:value})
+  console.log(name,value)
+  Firebase.database().ref().child("UserDetails").child(this.state.email2).update({
+    Update: value
+  })
 }
+
+  Logout(){
+    Firebase.auth().signOut().then(function(){
+      console.log("SignOut")
+    })
+  }
 
   render() {
     var date, hour
@@ -63,9 +115,9 @@ class Account extends Component {
         <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
           <View style={[styles.profile,{backgroundColor:this.state.textcolor}]}>
           <View style={[styles.avatar,{backgroundColor:this.state.bdcolor}]}>
-            <Text style={{color:this.state.textcolor,fontSize: 30,fontWeight:'bold'}}>A</Text>
+            <Text style={{color:this.state.textcolor,fontSize: 30,fontWeight:'bold'}}>{this.state.username.substring(0,1)}</Text>
           </View>
-          <Text style={[styles.username,{color:this.state.bdcolor}]}>Admin</Text>
+          <Text style={[styles.username,{color:this.state.bdcolor}]}>{this.state.username}</Text>
           </View>
           <View style={styles.icon}>
               <TouchableOpacity onPress={()=>alert("edit profile")}>
@@ -78,10 +130,10 @@ class Account extends Component {
             <Text style={[styles.settinginfo,{color:this.state.textcolor1}]}>Notifications</Text>
             <Switch
               trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={this.state.isEnabled ? "#f5dd4b" : this.state.textcolor}
+              thumbColor={this.state.Notification ? "#f5dd4b" : this.state.textcolor}
               ios_backgroundColor="#3e3e3e"
-              onValueChange={this.toggleSwitch}
-              value={this.state.isEnabled}
+              onValueChange={(value)=> this.toggleSwitch(value,"Notification")}
+              value={this.state.Notification}
             />
           </View>
           <View style={[styles.divider,{backgroundColor:this.state.textcolor1}]}/>
@@ -89,10 +141,10 @@ class Account extends Component {
             <Text style={[styles.settinginfo,{color:this.state.textcolor1}]}>Updates</Text>
             <Switch
               trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={this.state.isEnabled1 ? "#f5dd4b" : this.state.textcolor}
+              thumbColor={this.state.Update ? "#f5dd4b" : this.state.textcolor}
               ios_backgroundColor="#3e3e3e"
-              onValueChange={this.toggleSwitch1}
-              value={this.state.isEnabled1}
+              onValueChange={(value)=> this.toggleSwitch1(value,"Update")}
+              value={this.state.Update}
             />
           </View>
          {/*} <View style={[styles.divider,{backgroundColor:this.state.textcolor1}]}/>
@@ -150,7 +202,7 @@ class Account extends Component {
         </View>
 
         <View style={{marginTop: 30,alignItems:'center',marginBottom: 30}}>
-        <TouchableOpacity onPress={()=>alert("Logout")} style={[styles.logout,{backgroundColor:this.state.textcolor}]}>
+        <TouchableOpacity onPress={this.Logout} style={[styles.logout,{backgroundColor:this.state.textcolor}]}>
           <View style={styles.logout1}>
             <Text style={[styles.logout_text,{color:this.state.bdcolor}]}>LOGOUT</Text>
           </View>

@@ -59,6 +59,7 @@ export default class Typescreen extends React.Component{
             });
         return (
         <View style={{justifyContent: 'center',alignItems: 'center',backgroundColor:this.state.bdcolor,flex:1}}>
+          <View style={{marginTop:20}}/>
             {this.state.dataSource==null ?
                 <View style={{justifyContent:'center',alignItems:'center'}}>
                     <View style={styles.loader}>

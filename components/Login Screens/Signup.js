@@ -4,6 +4,17 @@ import Applogo from '../../assets/applogo.png'
 
 export default class Signup extends Component {
 
+    
+  constructor(props) {
+    super(props);
+    this.state={
+        email:'',
+        password:''
+    }
+  }
+
+
+
   render() {
     return (
         <View style={styles.container}>
@@ -16,6 +27,11 @@ export default class Signup extends Component {
                     placeholder="Email Id..."
                     placeholderTextColor="grey"
                     keyboardType='email-address'
+                    onChangeText={(value)=>{
+                        this.setState({
+                            email:value
+                        })
+                    }}
                     />
             </View>
             <View style={styles.textinput3}>
@@ -24,11 +40,16 @@ export default class Signup extends Component {
                     placeholder="Password..."
                     placeholderTextColor="grey"
                     secureTextEntry={true}
+                    onChangeText={(value)=>{
+                        this.setState({
+                            password:value
+                        })
+                    }}
                     />
             </View>
         </View>
         <View style={{marginTop: 50}}>
-        <TouchableOpacity onPress={()=>this.props.navigation.navigate("Next")}>
+        <TouchableOpacity onPress={()=>this.props.navigation.navigate("Next",{email:this.state.email,password: this.state.password})}>
                 <View style={styles.loginbtn}>
                     <Text style={styles.text}>Next</Text>
                 </View>

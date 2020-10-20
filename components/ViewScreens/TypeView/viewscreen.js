@@ -1,7 +1,9 @@
 import React from 'react'
-import {View,Text,StyleSheet,FlatList,TouchableOpacity,Image,ActivityIndicator} from 'react-native'
+import {View,Text,StyleSheet,FlatList,TouchableOpacity,Image,ActivityIndicator,Dimensions} from 'react-native'
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const width = Dimensions.get('window').width
 
 export default class Viewscreen extends React.Component{
 
@@ -58,7 +60,7 @@ export default class Viewscreen extends React.Component{
                     data = {this.state.dataSource}
                     renderItem = {({item}) => (
                         <View style={[styles.decoration,{borderColor: this.state.textcolor}]}>
-                        <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: name,data: this.state.dataSource,id: item.id})}>
+                        <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: name,data: this.state.dataSource,id: item.id,Artwork: Artwork})}>
                         <View style={{flexDirection:'row',margin: 5,alignItems:'center'}}>
                                 <Image source={{uri: item.artwork}} style={styles.image1}/>
                                 <View style={{flex:1,alignItems:'center',justifyContent: 'space-between',flexDirection:'row'}}>

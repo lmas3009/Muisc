@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet,ImageBackground,ScrollView,TouchableOpacity,FlatList,Image,SafeAreaView,ActivityIndicator } from 'react-native'
+import { Text, View, StyleSheet,ImageBackground,ScrollView,TouchableOpacity,FlatList,Image,SafeAreaView,ActivityIndicator,Dimensions } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { color } from 'react-native-reanimated';
 import axios from 'axios';
+import Firebase from '../Firebase'
+import AsyncStorage from '@react-native-community/async-storage'
 
+
+const width = Dimensions.get('window').width
 const songs = [
   {
     title: "death bed",
@@ -82,6 +86,8 @@ const daily = [
   },
 ]
 
+var data1 =[]
+
 class Home extends Component {
 
   constructor(props){
@@ -91,12 +97,47 @@ class Home extends Component {
       bdcolor:'',
       textcolor:'',
       dataSource:null,
-      loading: true
+      loading: true,
+      username:'',
+      notification:false,
+      update:false,
+      email: ''
     }
   }
   
+  componentDidMount(){
+    var email = Firebase.auth().currentUser.email
+    var email1 = email.split("@").join("_")
+    var email2 = email1.split(".").join("-")
+    var username = 'None'
+    var Notifcation = false
+    var Update = false
+    try{
+      Firebase.database().ref().child(email2).child("Recent Played").on('value', function(data){
+        
+        data1=[]
+        data.forEach((item,key)=>{
+          var feed ={
+            name: item.val().Name,
+            artwork: item.val().Artwork
+          }
+          
+          data1.push(feed)
+        })
+      })
+      
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+
+
+
 
   render() {
+    
+
     axios.get("https://pulsating-sort.000webhostapp.com/Search/Bollywood.php")
     .then(response => {
         setTimeout(() => {
@@ -150,8 +191,8 @@ class Home extends Component {
           <ScrollView style={{marginTop: 10}} 
               horizontal={true} showsVerticalScrollIndicator={false}>
               {
-                songs.map((item, index) => (
-                  <TouchableOpacity key={item.id} onPress={()=> alert(item.title)} activeOpacity={0.5}>
+                data1.map((item, index) => (
+                  <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} key={item.id} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.name,Artwork: item.artwork})}>
                     <View style={[styles.card1,{borderWidth: 1,borderColor:this.state.textcolor}]}>
                       <ImageBackground source={{uri: item.artwork}} style={styles.image} imageStyle={{ borderRadius: 10}} >
                         <View style={{backgroundColor: "white",height: 20,width: 60,alignItems:'center',justifyContent:'center', borderRadius: 10,marginBottom: 5,marginRight: 5}}>
@@ -192,24 +233,41 @@ class Home extends Component {
                     keyExtractor = {(item) => item.id}
                     data = {this.state.dataSource}
                     renderItem = {({item}) => (
-                      <View style={{margin: 5}}>
-                        <TouchableOpacity style={[styles.dailymix1,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{data: this.state.dataSource,id: item.id})}>
-                          <View style={{flexDirection:'row',alignItems:'center'}}>
+                      <View style={[styles.decoration,{width:width-30,borderColor:this.state.textcolor,backgroundColor:this.state.bdcolor,borderRadius: 10}]}>
+                        <TouchableOpacity style={[styles.dailymix12,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: 'Bollywood',data: this.state.dataSource,id: item.id,Artwork:item.artwork})}>
+                          <View style={{flexDirection:'row',margin:10,alignItems:'center'}}>
                             <Image source={{uri: item.artwork}} style={styles.image2}/>
                             <View style={{flex:1,alignItems:'center',justifyContent: 'space-between',flexDirection:'row'}}>
-                              <View style={{marginLeft: 10}}>
-                                <Text style={[styles.dailytext,{color:this.state.textcolor}]}>{item.title}</Text>
-                                <Text style={[styles.dailytext,{color:this.state.textcolor}]}>{item.artist}</Text>
-                              </View>  
-                              <View style={{ flexDirection: 'row',alignItems:'center',marginRight: 10}}>
-                                <Icon 
-                                  onPress={()=> alert("sadkjhkj")}
-                                  name='dots-vertical'
-                                  size={25}
-                                  color={this.state.textcolor}
-                                />
+                                <View style={{marginLeft: 10,width: 180}}>
+                                    <Text style={{width:170,color:this.state.textcolor}}>{item.title}</Text>
+                                    <Text style={{width:170,color:this.state.textcolor}}>{item.artist}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row',alignItems:'center'}}>
+                                    {this.state.heart ? <Icon 
+                                    onPress={()=> this.setState({
+                                        heart: false
+                                    })}
+                                    name='heart'
+                                    size={25}
+                                    // color="#f6355d"
+                                    color="red"
+                                    /> : <Icon 
+                                    onPress={()=> this.setState({
+                                        heart: true
+                                    })}
+                                    name='heart-outline'
+                                    size={25}
+                                    color={this.state.textcolor}
+                                    />}
+                                    <View style={{marginLeft: 5}}/>
+                                    <Icon 
+                                    onPress={()=> alert("sadkjhkj")}
+                                    name='dots-vertical'
+                                    size={25}
+                                    color={this.state.textcolor}
+                                    />
+                                </View>
                               </View>
-                            </View>
                           </View>
                         </TouchableOpacity>
                       </View>
@@ -239,9 +297,13 @@ const styles = StyleSheet.create({
     flex:1,
     backgroundColor:'black',
   },
+  text:{
+    fontSize: 40
+  },
   text1:{
     color:'white',
-    fontSize: 20
+    fontSize: 20,
+    fontWeight:'bold'
   },
   day:{
     color:'white',
@@ -270,7 +332,8 @@ const styles = StyleSheet.create({
   image2:{
     height: 70,
     width: 70,
-    borderRadius: 10
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
   },
   dailytext:{
     color:'white',
@@ -290,5 +353,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: 71,
     width: 320
+  },
+  decoration:{
+    margin:5,
+    marginRight: 20,
+    borderColor:'white',
+    borderWidth:1,
+    backgroundColor:'white'
   }
 })
