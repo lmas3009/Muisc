@@ -1,6 +1,7 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import { StyleSheet, TouchableOpacity, View, Image,Text,Button ,ImageBackground,Dimensions,Animated } from 'react-native'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Avatar, Icon } from 'react-native-elements'
@@ -17,6 +18,10 @@ import TrackPlayer , {
 
 import Controller from './Controller';
 import Slider from './Slider'
+import Firebase from '../Firebase'
+
+var new_data=[]
+
 
 export default class MusicPlayer extends React.Component {
 
@@ -30,40 +35,58 @@ export default class MusicPlayer extends React.Component {
           artist:"None",
           value: 0.0,
           isPlayerReady:false,
-          url:'None'
+          url:'None',
+          ver:false,
+          index:0,
+          songindex:0,
+          datasource:null,
+          count:0,
+          id:0
           
         }
     }  
     
  
  async componentDidMount(){
-    const url = this.props.route.params.url;
-    const artwork = this.props.route.params.artwork;
-    const title = this.props.route.params.title;
-    const artist = this.props.route.params.artist;
-    const id = this.props.route.params.id;
+   const data = this.props.route.params.data
+   const id1 = this.props.route.params.id;
+   console.log(id1)
+   var email = Firebase.auth().currentUser.email
+    var email1 = email.split("@").join("_")
+    var email2 = email1.split(".").join("-")
     
-   this.setState({
-     artwork: artwork,
-     artist: artist,
-     title: title,
-     url:url
-   })
-  var track = {
-    "id": id,
-    "title": title,
-    "artist": artist,
-    "artwork": artwork,
-    "url": url, // Load artwork from the file system
-};
+    Firebase.database().ref().child(email2).child("Liked").on('value',function(likeddata){
+      new_data=[]
+      likeddata.forEach((item,key)=>{
+        new_data.push(item.val().title)
+      })
+    })
+    this.setState({
+      datasource:data,
+      id:id1
+      // artist: data[this.state.songindex].artist,
+      // artwork: data[this.state.songindex].artwork,
+      // title: data[this.state.songindex].title
+    })
+  
+    var track = {
+      "id": "1",
+      "title": "Tujhe Rab Mana (feat. Shaan)",
+      "artist": "Rochak",
+      "artwork": "https://www.deccanherald.com/sites/dh/files/article_images/2020/05/19/Baaghi1-2102959503-1583400738.jpg",
+      "url": "https://pagalsong.in/uploads/systemuploads/mp3/Baaghi%203/Tujhe%20Rab%20Mana%20-%20Baaghi%203%20128%20Kbps.mp3", // Load artwork from the file system
+  };
    TrackPlayer.setupPlayer().then(async () => {
     console.log('Player ready');
-    TrackPlayer.add(track);
+    // TrackPlayer.add(JSON.stringify(data));
+    TrackPlayer.add(data)
+    this.setState({
+      isPlayerReady:true
+    })
     TrackPlayer.play()
-    
     TrackPlayer.updateOptions({
       ratingType: TrackPlayer.RATING_5_STARS,
-      stopWithApp: true,
+      stopWithApp: false,
       capabilities: [
           TrackPlayer.CAPABILITY_PLAY,
           TrackPlayer.CAPABILITY_PAUSE,
@@ -77,45 +100,153 @@ export default class MusicPlayer extends React.Component {
       ]
   
     });
-  });
-  
- } 
- playMusic()
- { 
-     this.setState({
-         ver:true
-     })
-     alert("hi")
-   TrackPlayer.play();
- }
+    this.setState({
+      index: id1,
+      artist: this.state.datasource[id1].artist,
+      artwork: this.state.datasource[id1].artwork,
+      title: this.state.datasource[id1].title
+    })
 
- pushMusic(){
-     this.setState({
-         ver:false
-     })
-     
-     alert("hsfdi")
-   TrackPlayer.pause();
+    this.likehow(this.state.datasource[id1].title)    
+    
+    // if(id1==0){
+    //   this.setState({
+    //     index: id1,
+    //     artist: this.state.datasource[id1].artist,
+    //     artwork: this.state.datasource[id1].artwork,
+    //     title: this.state.datasource[id1].title
+    //   })
+    // }
+    // else{
+    //   TrackPlayer.skip(this.state.datasource[id1-1].id)
+    //   .then((_) => {
+    //     this.setState({
+    //       index: id1-1,
+    //       artist: this.state.datasource[id1-1].artist,
+    //       artwork: this.state.datasource[id1-1].artwork,
+    //       title: this.state.datasource[id1-1].title
+    //     })
+    //     console.log(id1)
+    //     TrackPlayer.play();
+    //     console.log("track changes")
+    //   })
+    //   .catch((e) => {
+    //     console.log("erroe")
+    //   })
+    // }
+  });
+
+    
+  
  }
  
+ likehow(name){
+   console.log(name);
+  for(var i=0;i<new_data.length;i++){
+    var val = new_data[i]
+    if(val.includes(name)){
+      this.setState({
+        like:true
+      })
+    }
+
+  }
+ }
+ 
+playMusic()
+{ 
+    this.setState({
+        ver:false
+    })
+  TrackPlayer.play();
+}
+
+pushMusic(){
+    this.setState({
+        ver:true
+    })
+    
+  TrackPlayer.pause();
+}
+
+goNext(){
+  try{
+    TrackPlayer.skip(this.state.datasource[this.state.index].id)
+  .then((_) => {
+    console.log("track changes")
+    this.setState({
+      index: this.state.index+1,
+      artist: this.state.datasource[this.state.index].artist,
+      artwork: this.state.datasource[this.state.index].artwork,
+      title: this.state.datasource[this.state.index].title
+    })
+    TrackPlayer.play();
+  })
+  .catch((e) => {
+    console.log("erroe")
+  })
+  }
+  catch(err){
+    this.setState({
+      index: 0,
+      songindex: 0
+    })
+  }
+  
+}
+
+goPrv(){
+  try{
+    console.log(this.state.index)
+    TrackPlayer.skip(this.state.datasource[this.state.index].id)
+      .then((_) => {
+        console.log("track changes")
+        this.setState({
+          index: this.state.index-1,
+          artist: this.state.datasource[this.state.index].artist,
+          artwork: this.state.datasource[this.state.index].artwork,
+          title: this.state.datasource[this.state.index].title
+        })
+        TrackPlayer.play();
+      })
+      .catch((e) => {
+        console.log("erroe")
+      })
+  }
+  catch(err){
+    console.log("error")
+    this.setState({
+      index: 0,
+      songindex:0
+
+    })
+  }
+}
+
+// Dislike(name,artwork,data,index){
+//   var email = Firebase.auth().currentUser.email
+//     var email1 = email.split("@").join("_")
+//     var email2 = email1.split(".").join("-")
+    
+//     var name1 = name
+//     var nam = name1.split(" ").join("_")
+//     var nam1 = nam.split(".").join("-")
+//     var nam2 = nam1.split("(")[0]
+//     var name3 = nam2
+//     this.setState({
+//       like:false
+//     })
+//     var num = new_data.length+1
+//     Firebase.database().ref().child(email2).child("Liked").child(this.state.id).remove();
+
+// }
+
+
+
 
   render() {
+
     
-    var data=[];
-        if(this.state.ver===false){
-            data.push(
-              <TouchableOpacity onPress={this.playMusic} style={{height: 70,width: 70,backgroundColor:'#f6355d',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
-                <Feather name="play"  style={{marginLeft:3}} color="white" size={35}/>
-              </TouchableOpacity>
-            )
-        }
-        else{
-            data.push(
-              <TouchableOpacity onPress={this.pushMusic  } style={{height:70,width: 70,backgroundColor:'#f6355d',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
-                <Feather name="pause"  color='white' size={35} />
-              </TouchableOpacity>
-            )
-        }
 
   return (
     <View style={styles.container}>
@@ -132,7 +263,7 @@ export default class MusicPlayer extends React.Component {
       <View style={{marginTop: "80%"}}/> 
       {/*<Text style={{color:"white",fontSize: 30,fontWeight:'bold',marginBottom: 20}}>NOW PLAYING</Text>*/}
       <Image
-                style={{height: 200,width: 250,borderRadius: 20,resizeMode:'stretch'}}
+                style={{height: 200,width: 250,borderRadius: 10,resizeMode:'stretch'}}
                   source={{
                     uri:
                       this.state.artwork,
@@ -205,7 +336,52 @@ export default class MusicPlayer extends React.Component {
       </ImageBackground>
       <View style={{justifyContent:'center',alignItems:'center'}}>
       
-       <Controller url1={this.state.url}/>
+      <View>
+              <View style={{justifyContent:'center',alignItems:'center'}}>
+              <View style={{marginTop: 20,width:200,justifyContent:'space-around',flexDirection:'row',alignItems:'center'}}>
+                <Feather name="share-2" size={24} color="grey" onPress={()=>alert('Coming Soon')} />
+                  <Feather name="download" size={24} color="grey" onPress={()=>alert('Coming Soon')} />
+                  {!this.state.like 
+                      ? 
+                      <Feather name="heart"  size={24} color="black" /> 
+                      :
+                      <FontAwesome name="heart" size={24} color="red" onPress={()=>this.Dislike(this.state.title,this.state.artwork,this.state.datasource,this.state.index)} />
+                  }
+                </View>
+                </View>
+                
+                <View style={{alignItems:'center'}}>
+                <View style={{marginTop:30}}>
+                <Slider url1={this.state.url}/>
+                </View>
+                <View style={{marginTop: 20}}/>
+                <View style={{marginTop: 20 ,flexDirection:'row',width:250,justifyContent:'space-evenly',alignItems:'center'}}>
+                
+                <TouchableOpacity style={{height:50,width:50,backgroundColor:'lightgrey',borderRadius:10,alignItems:'center',justifyContent:'center'}} onPress={()=>{
+                  this.goPrv()
+                }}>
+                <FontAwesome5 name="backward"  size={24} color="black" />
+                </TouchableOpacity>
+                <View style={{height:50,width:50,background:'lightgrey',alignItems:'center',justifyContent:'center',borderRadius:10}}>
+                {this.state.ver?
+                <TouchableOpacity style={{height:70,width:70,backgroundColor:'#5e4ba8',borderRadius:40,alignItems:'center',justifyContent:'center'}} onPress={()=>{
+                  this.playMusic()
+                }}>
+                <FontAwesome5 name="play" size={24} color="white" /></TouchableOpacity>
+                :
+                <TouchableOpacity style={{height:70,width:70,backgroundColor:'#5e4ba8',borderRadius:40,alignItems:'center',justifyContent:'center'}} onPress={()=>{
+                  this.pushMusic()
+                }}>
+                <FontAwesome5 name="pause"  size={24} color="white" /></TouchableOpacity>}
+                </View>
+                <TouchableOpacity style={{height:50,width:50,backgroundColor:'lightgrey',borderRadius:10,alignItems:'center',justifyContent:'center'}} onPress={()=>{
+                  this.goNext()
+                }}>
+                <FontAwesome5 name="forward"  size={24} color="black" />
+                </TouchableOpacity>
+                </View>
+                </View>
+                </View>
       </View>
       {/*<Image
         style={{height: 200,width: 250,borderRadius: 10,resizeMode:'stretch'}}

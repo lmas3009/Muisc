@@ -1,6 +1,7 @@
 import React,{useEffect} from 'react'
 import { StyleSheet, TouchableOpacity, View, Image,Text,Button ,ImageBackground,Dimensions,Animated } from 'react-native'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Avatar, Icon } from 'react-native-elements'
@@ -19,6 +20,8 @@ import Controller from './Controller';
 import Slider from './Slider'
 import Firebase from '../Firebase'
 
+var new_data=[]
+
 
 export default class MusicPlayer extends React.Component {
 
@@ -36,7 +39,8 @@ export default class MusicPlayer extends React.Component {
           ver:false,
           index:0,
           songindex:0,
-          datasource:null
+          datasource:null,
+          count:0
           
         }
     }  
@@ -47,13 +51,22 @@ export default class MusicPlayer extends React.Component {
    const artwork = this.props.route.params.Artwork;
    const data = this.props.route.params.data
    const id1 = this.props.route.params.id;
+   const code  = this.props.route.params.Code
    console.log(id1)
    var email = Firebase.auth().currentUser.email
     var email1 = email.split("@").join("_")
     var email2 = email1.split(".").join("-")
     Firebase.database().ref().child(email2).child("Recent Played").child(name).update({
       Name:name,
-      Artwork:artwork
+      Artwork:artwork,
+      Code:code
+    })
+    
+    Firebase.database().ref().child(email2).child("Liked").on('value',function(likeddata){
+      new_data=[]
+      likeddata.forEach((item,key)=>{
+        new_data.push(item.val().title)
+      })
     })
     this.setState({
       datasource:data,
@@ -61,6 +74,7 @@ export default class MusicPlayer extends React.Component {
       // artwork: data[this.state.songindex].artwork,
       // title: data[this.state.songindex].title
     })
+  
     var track = {
       "id": "1",
       "title": "Tujhe Rab Mana (feat. Shaan)",
@@ -91,7 +105,8 @@ export default class MusicPlayer extends React.Component {
       ]
   
     });
-    
+
+    this.likehow(this.state.datasource[id1-1].title)    
     
     if(id1==0){
       this.setState({
@@ -123,7 +138,19 @@ export default class MusicPlayer extends React.Component {
 
     
   
- } 
+ }
+ 
+ likehow(name){
+  for(var i=0;i<new_data.length;i++){
+    var val = new_data[i]
+    if(val.includes(name)){
+      this.setState({
+        like:true
+      })
+    }
+
+  }
+ }
  
 playMusic()
 { 
@@ -195,33 +222,53 @@ goPrv(){
   }
 }
 
+Like(name,artwork,data,index){
+  var email = Firebase.auth().currentUser.email
+    var email1 = email.split("@").join("_")
+    var email2 = email1.split(".").join("-")
+    var name1 = data[index].title
+    var nam = name1.split(" ").join("_")
+    var nam1 = nam.split(".").join("-")
+    var nam2 = nam1.split("(")[0]
+    var name3 = nam2
+    this.setState({
+      like:true
+    })
+    var num = new_data.length+1
+    Firebase.database().ref().child(email2).child("Liked").child(num).update({
+      id: num.toString(),
+      title:data[index].title,
+      artist: data[index].artist,
+      artwork:data[index].artwork,
+      url: data[index].url,
+      
+    })
+
+}
+Dislike(name,artwork,data,index){
+  var email = Firebase.auth().currentUser.email
+    var email1 = email.split("@").join("_")
+    var email2 = email1.split(".").join("-")
+    
+    var name1 = name
+    var nam = name1.split(" ").join("_")
+    var nam1 = nam.split(".").join("-")
+    var nam2 = nam1.split("(")[0]
+    var name3 = nam2
+    this.setState({
+      like:false
+    })
+    var num = new_data.length+1
+    Firebase.database().ref().child(email2).child("Liked").child(num).remove();
+
+}
+
 
 
 
   render() {
+
     
-    var data=[];
-        
-        
-        try{
-            if(this.state.ver===false){
-                data.push(
-                  <TouchableOpacity onPress={()=>this.playMusic} style={{height: 70,width: 70,backgroundColor:'#f6355d',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
-                    <Feather name="play"  style={{marginLeft:3}} color="white" size={35}/>
-                  </TouchableOpacity>
-                )
-            }
-            else{
-                data.push(
-                  <TouchableOpacity onPress={()=>this.pushMusic} style={{height:70,width: 70,backgroundColor:'#f6355d',borderRadius:50,justifyContent:'center',alignItems:'center'}}>
-                    <Feather name="pause"  color='white' size={35} />
-                  </TouchableOpacity>
-                )
-        }
-        }catch (error) {
-            // handle Error
-            alert(error)
-        }
 
   return (
     <View style={styles.container}>
@@ -314,9 +361,14 @@ goPrv(){
       <View>
               <View style={{justifyContent:'center',alignItems:'center'}}>
               <View style={{marginTop: 20,width:200,justifyContent:'space-around',flexDirection:'row',alignItems:'center'}}>
-                <Feather name="share-2" size={24} color="black" />
-                  <Feather name="download" size={24} color="black" />
-                  <Feather name="heart" size={24} color="black" />
+                <Feather name="share-2" size={24} color="grey" onPress={()=>alert('Coming Soon')} />
+                  <Feather name="download" size={24} color="grey" onPress={()=>alert('Coming Soon')} />
+                  {!this.state.like 
+                      ? 
+                      <Feather name="heart" onPress={()=>this.Like(this.state.title,this.state.artwork,this.state.datasource,this.state.index)} size={24} color="black" /> 
+                      :
+                      <FontAwesome name="heart" size={24} color="red" onPress={()=>this.Dislike(this.state.title,this.state.artwork,this.state.datasource,this.state.index)} />
+                  }
                 </View>
                 </View>
                 

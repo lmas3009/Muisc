@@ -112,6 +112,9 @@ class Home extends Component {
     var username = 'None'
     var Notifcation = false
     var Update = false
+    this.setState({
+      email:email2
+    })
     try{
       Firebase.database().ref().child(email2).child("Recent Played").on('value', function(data){
         
@@ -119,7 +122,8 @@ class Home extends Component {
         data.forEach((item,key)=>{
           var feed ={
             name: item.val().Name,
-            artwork: item.val().Artwork
+            artwork: item.val().Artwork,
+            code: item.val().Code
           }
           
           data1.push(feed)
@@ -132,6 +136,14 @@ class Home extends Component {
   }
 
 
+    Like(name,artwork,artist,title){
+      Firebase.database().ref().child(this.state.email).child("Liked").child(title).set({
+        artwork:artwork,
+        artist:artist,
+        title:title,
+        name:name
+      })
+    }
 
 
 
@@ -140,12 +152,10 @@ class Home extends Component {
 
     axios.get("https://pulsating-sort.000webhostapp.com/Search/Bollywood.php")
     .then(response => {
-        setTimeout(() => {
             this.setState({
               dataSource: response.data,
               lodaing : false
             })
-        }, 2000)
     })
     .catch(error => {
         console.log(error);
@@ -192,7 +202,7 @@ class Home extends Component {
               horizontal={true} showsVerticalScrollIndicator={false}>
               {
                 data1.map((item, index) => (
-                  <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} key={item.id} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.name,Artwork: item.artwork})}>
+                  <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} key={item.id} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.name,Artwork: item.artwork,Code:item.code})}>
                     <View style={[styles.card1,{borderWidth: 1,borderColor:this.state.textcolor}]}>
                       <ImageBackground source={{uri: item.artwork}} style={styles.image} imageStyle={{ borderRadius: 10}} >
                         <View style={{backgroundColor: "white",height: 20,width: 60,alignItems:'center',justifyContent:'center', borderRadius: 10,marginBottom: 5,marginRight: 5}}>
@@ -243,7 +253,7 @@ class Home extends Component {
                                     <Text style={{width:170,color:this.state.textcolor}}>{item.artist}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row',alignItems:'center'}}>
-                                    {this.state.heart ? <Icon 
+                                    {/* {this.state.heart ? <Icon 
                                     onPress={()=> this.setState({
                                         heart: false
                                     })}
@@ -258,7 +268,13 @@ class Home extends Component {
                                     name='heart-outline'
                                     size={25}
                                     color={this.state.textcolor}
-                                    />}
+                                    />} */}
+                                    <Icon 
+                                    onPress={()=>  alert('saved')}
+                                    name='heart-outline'
+                                    size={25}
+                                    color={this.state.textcolor}
+                                    />
                                     <View style={{marginLeft: 5}}/>
                                     <Icon 
                                     onPress={()=> alert("sadkjhkj")}

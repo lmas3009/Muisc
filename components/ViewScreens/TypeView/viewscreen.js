@@ -2,6 +2,7 @@ import React from 'react'
 import {View,Text,StyleSheet,FlatList,TouchableOpacity,Image,ActivityIndicator,Dimensions} from 'react-native'
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Firebase from '../../Firebase'
 
 const width = Dimensions.get('window').width
 
@@ -14,16 +15,39 @@ export default class Viewscreen extends React.Component{
           bdcolor:'',
           heart:false,
           dataSource:null,
-          loading: true
+          loading: true,
+          email:''
         }
       }
+
+      componentDidMount(){
+        var email = Firebase.auth().currentUser.email
+        var email1 = email.split("@").join("_")
+        var email2 = email1.split(".").join("-")
+        var username = 'None'
+        var Notifcation = false
+        var Update = false
+        this.setState({
+          email:email2
+        })
+    }
+
+      Like(name,artwork,artist,title,url){
+        // Firebase.database().ref().child(this.state.email).child("Liked").child(title).set({
+        //   artwork:artwork,
+        //   artist:artist,
+        //   title:title,
+        //   url:url
+        // })
+      }
+  
 
     render(){
         
          const name = this.props.route.params.Name  
           const Artwork = this.props.route.params.Artwork 
-        //  const title_name = name.split(" ").join(""); 
-        axios.get("https://music-application-ftd.000webhostapp.com/Bollywood/"+name.split(" ").join("")+".php")
+          const code = this.props.route.params.Code
+        axios.get("https://music-application-ftd.000webhostapp.com/"+code+"/"+name.split(" ").join("")+".php")
             .then(response => {
                     this.setState({
                     dataSource: response.data,
@@ -60,7 +84,7 @@ export default class Viewscreen extends React.Component{
                     data = {this.state.dataSource}
                     renderItem = {({item}) => (
                         <View style={[styles.decoration,{borderColor: this.state.textcolor}]}>
-                        <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: name,data: this.state.dataSource,id: item.id,Artwork: Artwork})}>
+                        <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: name,data: this.state.dataSource,id: item.id,Artwork: Artwork,Code:code})}>
                         <View style={{flexDirection:'row',margin: 5,alignItems:'center'}}>
                                 <Image source={{uri: item.artwork}} style={styles.image1}/>
                                 <View style={{flex:1,alignItems:'center',justifyContent: 'space-between',flexDirection:'row'}}>
@@ -69,7 +93,7 @@ export default class Viewscreen extends React.Component{
                                     <Text style={[styles.text1]}>{item.artist}</Text>
                                 </View>  
                                 <View style={{ flexDirection: 'row',alignItems:'center',marginRight: 10}}>
-                                    {this.state.heart ? <Icon 
+                                    {/* {this.state.heart ? <Icon 
                                     onPress={()=> this.setState({
                                         heart: false
                                     })}
@@ -84,8 +108,7 @@ export default class Viewscreen extends React.Component{
                                     name='heart-outline'
                                     size={25}
                                     color='black'
-                                    />}
-                                    <View style={{marginLeft: 5}}/>
+                                    />} */}
                                     <Icon 
                                     onPress={()=> alert("sadkjhkj")}
                                     name='dots-vertical'

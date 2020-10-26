@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { Component } from 'react'
-import { Text, View ,StyleSheet,ScrollView,TouchableOpacity,Switch} from 'react-native'
+import { Text, View ,StyleSheet,ScrollView,TouchableOpacity,Switch,RefreshControl} from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Firebase from '../Firebase'
 
@@ -23,9 +23,40 @@ class Account extends Component {
       Notification:false,
       Update: false,
       Notification1:false,
-      Update1: true
+      Update1: true,
+      refreshing:false
     }
+    
   }
+  _onRefresh = () => {
+          this.setState({refreshing:true})
+          var email = Firebase.auth().currentUser.email
+    var email1 = email.split("@").join("_")
+    var email2 = email1.split(".").join("-")
+    
+    var username = 'None'
+    var Notifcation = 'no'
+    var Update = 'no'
+    this.setState({
+      refreshing:false})
+    Firebase.database().ref().child("UserDetails").child(email2).on('value', function(snapshot) {
+      username = snapshot.val().Username
+      // if(snapshot.val().Notifcation){
+      //   Notifcation = true
+      // }
+      // if(snapshot.val().Update){
+      //   Update = tre
+      // } 
+      Notifcation = snapshot.val().Notifcation
+      Update = snapshot.val().Update
+    })
+    this.setState({
+      email2:email2,
+      username:username,
+      Notification:Notifcation,
+      Update:Update,
+    })
+      }
 
   componentDidMount(){
     var email = Firebase.auth().currentUser.email
@@ -111,7 +142,7 @@ class Account extends Component {
 
     return (
       <View style={{backgroundColor:this.state.bdcolor,flex:1}}>
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshControl={this.state.refreshing} onRefresh={this._onRefresh}/>}>
         <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
           <View style={[styles.profile,{backgroundColor:this.state.textcolor}]}>
           <View style={[styles.avatar,{backgroundColor:this.state.bdcolor}]}>
@@ -172,13 +203,13 @@ class Account extends Component {
         </View>
 
 
-        <View style={styles.languages}>
+        {/* <View style={styles.languages}>
           <Text style={[styles.settinginfo,{color:this.state.textcolor1}]}>Languages</Text>
           <View style={[styles.language,{borderColor:this.state.textcolor}]}>
             <Text style={[styles.language1,{color:this.state.textcolor1}]}>Select Your Languages for Music</Text>
             <FontAwesome name="chevron-right" color={this.state.textcolor1} size={20}/>
           </View>
-        </View>
+        </View> */}
 
         <View style={styles.about}>
           <Text style={[styles.settinginfo,{color:this.state.textcolor1}]}>About</Text>

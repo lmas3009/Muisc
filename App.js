@@ -17,8 +17,8 @@ import Typescreen from './components/ViewScreens/TypeView/Typescreens'
 import Viewscreen from './components/ViewScreens/TypeView/viewscreen'
 import Musicplayer from './components/ViewScreens/MusicPlay'
 import SplashScreen from './components/ViewScreens/Splashscreen'
-
-
+import Recent from './components/MainScreens/Recent'
+import Liked from './components/MainScreens/Liked'
 
 const Tab  = createBottomTabNavigator();
 
@@ -110,6 +110,8 @@ function App() {
         <Stack.Screen name="Typescreen" component={Typescreen} options={{headerShown: false}} />
         <Stack.Screen name="Viewscreen" component={Viewscreen} options={{headerShown: false}} />
         <Stack.Screen name="Musicplayer" component={Musicplayer} options={{headerShown: false}} />
+        <Stack.Screen name="Recent" component={Recent} options={{headerShown: false}} />
+        <Stack.Screen name="Liked" component={Liked} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
