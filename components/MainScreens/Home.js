@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet,ImageBackground,ScrollView,TouchableOpacity,FlatList,Image,SafeAreaView,ActivityIndicator,Dimensions } from 'react-native'
+import { Text, View, StyleSheet,ImageBackground,ScrollView,TouchableOpacity,FlatList,Image,SafeAreaView,RefreshControl,ActivityIndicator,Dimensions } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { color } from 'react-native-reanimated';
 import axios from 'axios';
@@ -87,7 +87,7 @@ const daily = [
 ]
 
 var data1 =[]
-
+var playlist=[]
 class Home extends Component {
 
   constructor(props){
@@ -101,10 +101,41 @@ class Home extends Component {
       username:'',
       notification:false,
       update:false,
-      email: ''
+      email: '',
+      artwork: 'https://forum.byjus.com/wp-content/themes/qaengine/img/default-thumbnail.jpg',
+      refreshing:false
     }
+    
+    Firebase.database().ref().child("Search").on('value',function(data){
+      playlist=[]
+      data.forEach((item,key)=>{
+          var feed = {
+            Playlistname:item.val().PlaylistName,
+            Date: item.val().Date,
+            Username: item.val().Username
+          }
+          playlist.push(feed)
+      })
+    })
   }
   
+
+  _onRefresh = () => {
+    this.setState({refreshing:true})
+    Firebase.database().ref().child("Search").on('value',function(data){
+      playlist=[]
+      data.forEach((item,key)=>{
+          var feed = {
+            Playlistname:item.val().PlaylistName,
+            Date: item.val().Date,
+            Username: item.val().Username
+          }
+          playlist.push(feed)
+      })
+    })
+    this.setState({refreshing:false})
+}
+
   componentDidMount(){
     var email = Firebase.auth().currentUser.email
     var email1 = email.split("@").join("_")
@@ -129,10 +160,23 @@ class Home extends Component {
           data1.push(feed)
         })
       })
+      Firebase.database().ref().child("Search").on('value',function(data){
+        playlist=[]
+        data.forEach((item,key)=>{
+            var feed = {
+              Playlistname:item.val().PlaylistName,
+              Date: item.val().Date,
+              Username: item.val().Username
+            }
+            playlist.push(feed)
+        })
+      })
       
     }catch(err){
       console.log(err)
     }
+
+    
   }
 
 
@@ -189,7 +233,7 @@ class Home extends Component {
     
 
     return (
-        <ScrollView>
+        <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
           <View style={[styles.container,{backgroundColor:this.state.bdcolor}]}>
         <View style={{marginTop: 40, marginLeft: 30, flexDirection:'row', alignItems:'center'}}>
           <Text style={[styles.text1,{color:this.state.textcolor}]}>Good </Text>
@@ -235,71 +279,32 @@ class Home extends Component {
               </View>
               <View style={{margin: 10}}>
                 <View style={{margin: 10}}>
-                  <Text style={{color:this.state.textcolor,fontSize: 20}}>Recommended for you</Text>
+                  <Text style={{color:this.state.textcolor,fontSize: 20}}>Playlist</Text>
                 </View>
                   <View style={{alignItems:'center'}}>
-                    <FlatList nestedScrollEnabled={true}
-                    numColumns = {1}
-                    keyExtractor = {(item) => item.id}
-                    data = {this.state.dataSource}
-                    renderItem = {({item}) => (
-                      <View style={[styles.decoration,{width:width-30,borderColor:this.state.textcolor,backgroundColor:this.state.bdcolor,borderRadius: 10}]}>
-                        <TouchableOpacity style={[styles.dailymix12,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: 'Bollywood',data: this.state.dataSource,id: item.id,Artwork:item.artwork})}>
-                          <View style={{flexDirection:'row',margin:10,alignItems:'center'}}>
-                            <Image source={{uri: item.artwork}} style={styles.image2}/>
-                            <View style={{flex:1,alignItems:'center',justifyContent: 'space-between',flexDirection:'row'}}>
-                                <View style={{marginLeft: 10,width: 180}}>
-                                    <Text style={{width:170,color:this.state.textcolor}}>{item.title}</Text>
-                                    <Text style={{width:170,color:this.state.textcolor}}>{item.artist}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row',alignItems:'center'}}>
-                                    {/* {this.state.heart ? <Icon 
-                                    onPress={()=> this.setState({
-                                        heart: false
-                                    })}
-                                    name='heart'
-                                    size={25}
-                                    // color="#f6355d"
-                                    color="red"
-                                    /> : <Icon 
-                                    onPress={()=> this.setState({
-                                        heart: true
-                                    })}
-                                    name='heart-outline'
-                                    size={25}
-                                    color={this.state.textcolor}
-                                    />} */}
-                                    <Icon 
-                                    onPress={()=>  alert('saved')}
-                                    name='heart-outline'
-                                    size={25}
-                                    color={this.state.textcolor}
-                                    />
-                                    <View style={{marginLeft: 5}}/>
-                                    <Icon 
-                                    onPress={()=> alert("sadkjhkj")}
-                                    name='dots-vertical'
-                                    size={25}
-                                    color={this.state.textcolor}
-                                    />
-                                </View>
-                              </View>
+                  <FlatList
+                      keyExtractor = {(item) => item.id}
+                      data = {playlist}
+                      renderItem = {({item}) => (
+                        <TouchableOpacity onPress={()=> this.props.navigation.navigate('AddItem')} style={{height: 80,width:width-10,backgroundColor:this.state.textcolor,margin: 5,borderRadius: 10,justifyContent:'flex-start',alignItems:'center',flexDirection:"row"}}>
+                          <View style={{height:60,width:60,borderColor:this.state.bdcolor,borderWidth:1,marginLeft: 10,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
+                            <Image source={{
+                              uri: this.state.artwork
+                            }} style={{height: 60,width:60,borderRadius:10}}/>
                           </View>
-                        </TouchableOpacity>
-                      </View>
-                    )}
+                          <View style={{flexDirection:'column'}}>
+                            <Text style={{color:this.state.bdcolor,fontSize: 18,fontWeight:'bold',marginLeft:20}}>{item.Playlistname}</Text>
+                            <Text style={{color:this.state.bdcolor,fontSize: 15,fontWeight:'w700',marginLeft:20}}>{item.Date.split("_").join(" ")}</Text>
+                          </View>
+                      </TouchableOpacity>
+                      )}
                     /></View>
-                    {this.state.loading &&
-                      <View style={styles.loader}>
-                          <ActivityIndicator size="large" color={this.state.textcolor} />
-                      </View>
-                      }
                   </View>
-                  <View style={{margin:10}}>    
+                  {/* <View style={{margin:10}}>    
                     <View style={{margin: 10}}>
                       <Text style={{color:this.state.textcolor,fontSize: 20}}>Popular Artists</Text>
                     </View>
-                  </View>
+                  </View> */}
               </View>
         </ScrollView>
     )
