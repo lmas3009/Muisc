@@ -89,7 +89,7 @@ class Library extends Component {
         <View style={{height: 65,width:width,backgroundColor:this.state.textcolor,borderBottomRightRadius:10,justifyContent:'center'}}>
               <Text style={{color:this.state.bdcolor,fontSize: 23,fontWeight:'bold',marginLeft: 20}}>Library</Text>
         </View>
-        <TouchableOpacity onPress={()=>this.props.navigation.navigate('Liked')}  style={{height: 80,width:width-10,backgroundColor:this.state.textcolor,margin: 5,borderRadius: 10,justifyContent:'flex-start',alignItems:'center',flexDirection:"row"}}>
+        <TouchableOpacity onPress={()=>this.props.navigation.navigate('LikedMusic')}  style={{height: 80,width:width-10,backgroundColor:this.state.textcolor,margin: 5,borderRadius: 10,justifyContent:'flex-start',alignItems:'center',flexDirection:"row"}}>
           <View style={{height:60,width:60,borderColor:this.state.bdcolor,borderWidth:1,marginLeft: 10,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
             <Image source={Heart} style={{height: 60,width:60,borderRadius:10}}/>
           </View>

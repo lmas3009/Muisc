@@ -1,6 +1,10 @@
 import React from 'react'
-import {View,Text,FlatList,TouchableOpacity,Image,StyleSheet,ActivityIndicator} from 'react-native'
+import {View,Text,FlatList,TouchableOpacity,Image,StyleSheet,ActivityIndicator,Dimensions,ImageBackground} from 'react-native'
 import axios from 'axios';
+import Ionicons from 'react-native-vector-icons/MaterialCommunityIcons'
+
+
+const width  = Dimensions.get('window').width
 
 export default class Typescreen extends React.Component{
 
@@ -44,6 +48,7 @@ export default class Typescreen extends React.Component{
     }
 
         const name = this.props.route.params.Name  
+        const bg = this.props.route.params.Image  
         axios.get("https://music-application-ftd.000webhostapp.com/Categories/"+name+".php")
             .then(response => {
                 setTimeout(() => {
@@ -59,28 +64,32 @@ export default class Typescreen extends React.Component{
             });
         return (
         <View style={{justifyContent: 'center',alignItems: 'center',backgroundColor:this.state.bdcolor,flex:1}}>
-          <View style={{marginTop:20}}/>
             {this.state.dataSource==null ?
                 <View style={{justifyContent:'center',alignItems:'center'}}>
                     <View style={styles.loader}>
-                        <ActivityIndicator size="large" color={this.state.textcolor}/>
+                        <ActivityIndicator size="large" color={this.state.textcolor}/> 
                     </View>
                     <Text>Fetching Data</Text>
                 </View>
-                :<FlatList
-              numColumns = {2}
-              keyExtractor = {(item) => item.id}
-              data = {this.state.dataSource}
-              renderItem = {({item}) => (
-                <View style={[styles.decoration,{borderColor: this.state.textcolor}]}>
-                  <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.title,Artwork: item.artwork,Code:name})}>
-                      <Image source={{uri: item.artwork}} style={styles.image1}/>
-                      <Text style={[styles.text,{color:this.state.textcolor}]}>{item.title}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-              />
-    }
+                :<View>
+                   <View style={{height: 65,width:width,backgroundColor:this.state.textcolor,borderBottomRightRadius:10,borderBottomLeftRadius:10,justifyContent:'flex-start',flexDirection:'row',alignItems:'center'}}>
+                     <Ionicons name="backburger" onPress={()=>this.props.navigation.pop()} size={28} color={this.state.bdcolor} style={{marginLeft: 10}}/>
+                    <Text style={{color:this.state.bdcolor,fontSize: 23,fontWeight:'bold',marginLeft: 20}}>{name}</Text>
+                  </View>
+                    <FlatList
+                      keyExtractor = {(item) => item.id}
+                      data = {this.state.dataSource}
+                      renderItem = {({item}) => (
+                            <View  style={{borderColor: this.state.textcolor,width:width-20,margin:10,borderRadius:10,backgroundColor:"#f2f2f2"}}>
+                              <TouchableOpacity style={{borderColor:this.state.textcolor,flexDirection:'row',justifyContent:'space-between',alignItems:'center'}} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.title,Artwork: item.artwork,Code:name})}>
+                                   <Image source={bg} style={{height:150,width:180,resizeMode:'cover',borderTopLeftRadius:10,borderBottomLeftRadius:10}}/>
+                                  <Image source={{uri: item.artwork}} style={{height:150,width:150,marginRight:10}}/>
+                              </TouchableOpacity>
+                            </View>
+                      )}
+                      />
+                  </View>
+                  }
               {/* {this.state.loading &&
                 <View style={styles.loader}>
                     <ActivityIndicator size="large" color={this.state.textcolor} />

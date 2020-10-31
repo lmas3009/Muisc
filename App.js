@@ -19,6 +19,12 @@ import Musicplayer from './components/ViewScreens/MusicPlay'
 import SplashScreen from './components/ViewScreens/Splashscreen'
 import Recent from './components/MainScreens/Recent'
 import Liked from './components/MainScreens/Liked'
+import AddItem from './components/MainScreens/AddItem'
+import Dailymix1 from './components/Dailymix/Mix1'
+import Dailymix2 from './components/Dailymix/Mix2'
+import Dailymix3 from './components/Dailymix/Mix3'
+import Dailymix4 from './components/Dailymix/Mix4'
+import Dailymix5 from './components/Dailymix/Mix5'
 
 const Tab  = createBottomTabNavigator();
 
@@ -111,7 +117,13 @@ function App() {
         <Stack.Screen name="Viewscreen" component={Viewscreen} options={{headerShown: false}} />
         <Stack.Screen name="Musicplayer" component={Musicplayer} options={{headerShown: false}} />
         <Stack.Screen name="Recent" component={Recent} options={{headerShown: false}} />
-        <Stack.Screen name="Liked" component={Liked} options={{headerShown: false}} />
+        <Stack.Screen name="LikedMusic" component={Liked} options={{headerShown: false}} />
+        <Stack.Screen name="AddItem" component={AddItem} options={{headerShown: false}} />
+        <Stack.Screen name="Dailymix1" component={Dailymix1} options={{headerShown: false}} />
+        <Stack.Screen name="Dailymix2" component={Dailymix2} options={{headerShown: false}} />
+        <Stack.Screen name="Dailymix3" component={Dailymix3} options={{headerShown: false}} />
+        <Stack.Screen name="Dailymix4" component={Dailymix4} options={{headerShown: false}} />
+        <Stack.Screen name="Dailymix5" component={Dailymix5} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

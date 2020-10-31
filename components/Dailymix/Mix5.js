@@ -1,45 +1,31 @@
-import React from 'react'
-import {View,Text,StyleSheet,FlatList,TouchableOpacity,Image,ActivityIndicator,Dimensions} from 'react-native'
-import axios from 'axios';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Firebase from '../../Firebase'
+import React, { Component } from 'react'
+import { Text, View,Dimensions,Image,TouchableOpacity,RefreshControl,FlatList,ScrollView,StyleSheet,ActivityIndicator } from 'react-native'
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
+import Heart from '../../assets/Icons/Heart.png'
+import Recently from '../../assets/Icons/recently.jpg'
+import Firebase from '../Firebase'
+import axios from 'axios'
 
 const width = Dimensions.get('window').width
 
-export default class Viewscreen extends React.Component{
+var playlist=[]
+export default class Mix5 extends Component {
 
     constructor(props){
         super(props);
         this.state = {
           day:'',
           bdcolor:'',
-          heart:false,
+          textcolor:'',
+          artwork: 'https://forum.byjus.com/wp-content/themes/qaengine/img/default-thumbnail.jpg',
           dataSource:null,
           loading: true,
-          email:'',
-          name:'',
-          artwork:'',
-          code:''
         }
       }
-
+    
       componentDidMount(){
-        var email = Firebase.auth().currentUser.email
-        var email1 = email.split("@").join("_")
-        var email2 = email1.split(".").join("-")
-        const name = this.props.route.params.Name  
-          const Artwork = this.props.route.params.Artwork 
-          const code = this.props.route.params.Code
-        var username = 'None'
-        var Notifcation = false
-        var Update = false
-        this.setState({
-          email:email2,
-          code:code,
-          artwork:Artwork,
-          name:name
-        })
-        axios.get("https://music-application-ftd.000webhostapp.com/"+code+"/"+name.split("_")[1]+name.split("_")[2]+".php")
+        axios.get("https://music-application-ftd.000webhostapp.com/DailyMix/day5.php")
             .then(response => {
                     this.setState({
                     dataSource: response.data,
@@ -49,36 +35,46 @@ export default class Viewscreen extends React.Component{
             .catch(error => {
                 alert(error);
             });
+      }
+
+  render() {
+    console.log(playlist)
+    var date, hour
+ 
+    date = new Date();
+    hour = date.getHours(); 
+    if(hour>=4 && hour<12){
+      this.state.day = 'Morning',
+      this.state.bdcolor = 'white',
+      this.state.textcolor = "black"
+    }
+    else if(hour>=12 && hour<16){
+      this.state.day = 'Afternoon',
+      this.state.bdcolor = 'lightgrey',
+      this.state.textcolor = "black"
+    }
+    else if(hour>=16 && hour<19){
+      this.state.day = 'Evening',
+      this.state.bdcolor = 'grey',
+      this.state.textcolor = "white"
+    }
+    else{
+      this.state.day = "Night",
+      this.state.bdcolor = 'black',
+      this.state.textcolor = "white"
     }
 
-      Like(name,artwork,artist,title,url){
-        // Firebase.database().ref().child(this.state.email).child("Liked").child(title).set({
-        //   artwork:artwork,
-        //   artist:artist,
-        //   title:title,
-        //   url:url
-        // })
-      }
-  
-
-    render(){
-        
-         
-        
-        return(
-            <View style={{backgroundColor:'#ececec',flex:1}}>
-                <Image style={{height: '35%',width: '100%',borderBottomLeftRadius: 50,borderBottomRightRadius: 50}}
-                    source={{
-                    uri:
-                        this.state.artwork,
-                    }}
-                    resizeMode="stretch" />
-                {this.state.dataSource==null ?
+    return (
+      <ScrollView style={{backgroundColor:this.state.bdcolor,flex:1}}>
+        <View style={{height: 65,width:width,backgroundColor:this.state.textcolor,borderBottomRightRadius:10,justifyContent:'center'}}>
+              <Text style={{color:this.state.bdcolor,fontSize: 23,fontWeight:'bold',marginLeft: 20}}>Daily Mix 5</Text>
+        </View>
+        {this.state.dataSource==null ?
                 <View style={{justifyContent:'center',alignItems:'center',marginTop: 200}}>
                     <View style={styles.loader}>
-                        <ActivityIndicator size="large" color="black"/>
+                        <ActivityIndicator size="large" color={this.state.textcolor}/>
                     </View>
-                    <Text>Fetching Data</Text>
+                    <Text style={{color:this.state.textcolor}}>Fetching Data</Text>
                 </View>
                 :
                 <View>
@@ -133,40 +129,40 @@ export default class Viewscreen extends React.Component{
                     />
                     </View>
                 }
-            </View>
-        )
-    }
+        </ScrollView>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
-    decoration:{
-        backgroundColor:'white',
-        borderRadius:10,
-        margin: 10
+  decoration:{
+      backgroundColor:'white',
+      borderRadius:10,
+      margin: 10
 
-    },
-    // type:{
-    //     flexDirection:'column',
-    //     alignItems:'center',
-    // },
-    image1:{
-        height: 70,
-        width: 70,
-        borderTopLeftRadius: 10,
-        borderBottomLeftRadius: 10,
-        resizeMode:'stretch',
-    },
-    text:{
-        fontSize:15,
-        marginTop:5,
-        marginBottom:2,
-        marginLeft: 5,
-        marginRight:10,
-        fontWeight:'bold'
-    },
-    text1:{
-        fontWeight:'600',
-        color:'grey',
-        margin: 5
-    }
+  },
+  // type:{
+  //     flexDirection:'column',
+  //     alignItems:'center',
+  // },
+  image1:{
+      height: 70,
+      width: 70,
+      borderTopLeftRadius: 10,
+      borderBottomLeftRadius: 10,
+      resizeMode:'stretch',
+  },
+  text:{
+      fontSize:15,
+      marginTop:5,
+      marginBottom:2,
+      marginLeft: 5,
+      marginRight:10,
+      fontWeight:'bold'
+  },
+  text1:{
+      fontWeight:'600',
+      color:'grey',
+      margin: 5
+  }
 })

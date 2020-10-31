@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import {View,Text,Dimensions,FlatList,Image,RefreshControl,TouchableOpacity} from 'react-native'
+import {View,Text,Dimensions,FlatList,Image,RefreshControl,TouchableOpacity,ScrollView} from 'react-native'
 import Firebase from '../Firebase'
 
 const width = Dimensions.get('window').width
@@ -110,19 +110,20 @@ export default class Recent extends Component {
                 <View style={{height: 65,width:width,backgroundColor:this.state.textcolor,borderBottomRightRadius:10,justifyContent:'center'}}>
                     <Text style={{color:this.state.bdcolor,fontSize: 23,fontWeight:'bold',marginLeft: 20}}>Recently Played</Text>
                 </View>
-                <View style={{alignItems:'center',width:width}}>
+                <ScrollView style={{width:width}}>
                     <FlatList 
+                        horizontal={false} showsVerticalScrollIndicator={false}
                         keyExtractor = {(item) => item.id}
                         data = {data1}   
                         refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}
                         renderItem = {({item}) => (
                             <TouchableOpacity onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.name,Artwork: item.artwork,Code:item.code})} style={{height: 100,width:width-20,backgroundColor:this.state.textcolor,borderRadius:10,margin:10,flexDirection:'row',justifyContent:'flex-start',alignItems:'center'}}>
-                                <Image source={{uri:item.artwork}} style={{height:80,width:90,borderRadius:10,marginLeft:10}}/>
-                                <Text style={{marginLeft:10,fontSize:17,color:this.state.bdcolor}}>{item.name}</Text>
+                                <Image source={{uri:item.artwork}} style={{resizeMode:'stretch',height:80,width:80,borderRadius:10,marginLeft:10}}/>
+                                <Text style={{marginLeft:10,fontSize:17,color:this.state.bdcolor}}>{item.name.split("_").join(" ")}</Text>
                             </TouchableOpacity>
                         )}
                     />
-                </View>
+                </ScrollView>
             </View>
         )}
 }

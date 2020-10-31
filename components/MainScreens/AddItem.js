@@ -1,5 +1,5 @@
 import React from 'react'
-import {View,Text,Dimensions,TextInput,TouchableOpacity,ScrollView} from 'react-native'
+import {View,Text,Dimensions,TextInput,TouchableOpacity,ScrollView,Image} from 'react-native'
 import Firebase from '../Firebase'
 
 const width = Dimensions.get('window').width
@@ -17,26 +17,34 @@ export default class AddItem extends React.Component{
           Username:'',
           Date: new Date().toLocaleString(),
           visible:false,
-          veri:'red'
+          veri:'red',
+          imageurl:'https://forum.byjus.com/wp-content/themes/qaengine/img/default-thumbnail.jpg',
+          Img:'https://forum.byjus.com/wp-content/themes/qaengine/img/default-thumbnail.jpg'
         }
       }
 
-      Addlist(playlistname,username,date){
+      Addlist(playlistname,username,date,image){
         var email = Firebase.auth().currentUser.email
         var email1 = email.split("@").join("_")
         var email2 = email1.split(".").join("-")
+        if(image==''){
+            image = "https://forum.byjus.com/wp-content/themes/qaengine/img/default-thumbnail.jpg"
+        }
           Firebase.database().ref().child('Search').child(playlistname).set({
             Email:email2,
             PlaylistName:playlistname,
             Username:username,
-            Date:date
+            Date:date,
+            Image: image
           }).then(()=>{
               alert("Added your playlist")
               this.setState({
                   Name:'',
                   Username:'',
                   visible:false,
-                  veri:"red"
+                  veri:"red",
+                  imageurl:'https://forum.byjus.com/wp-content/themes/qaengine/img/default-thumbnail.jpg',
+                  Img:'https://forum.byjus.com/wp-content/themes/qaengine/img/default-thumbnail.jpg'
               })
           })
       }
@@ -126,6 +134,27 @@ export default class AddItem extends React.Component{
                                     }}
                                 />            
                             </View>
+                            <Text style={{color:this.state.textcolor,fontSize:18,fontWeight:'bold',marginTop:10}}>Playlist Image</Text>
+                            <View style={{marginTop:10,height: 40,width: width-50,borderColor:this.state.textcolor,borderWidth:1,borderRadius:5}}>
+                                <TextInput 
+                                    style={{fontSize:15,color:this.state.textcolor,marginLeft:10}}
+                                    placeholder="Image Url ..."
+                                    placeholderTextColor={this.state.textcolor}
+                                    onChangeText={(value)=>{
+                                        this.setState({imageurl:value})
+                                    }}
+                                />            
+                            </View>
+                            <View style={{alignItems:'flex-end'}}>
+                                <TouchableOpacity onPress={()=> this.setState({Img:this.state.imageurl})} style={{margin:10,marginRight:20,height:35,width:100,backgroundColor:this.state.veri,alignItems:'center',justifyContent:'center',borderRadius:5}}>
+                                    <Text style={{color:"white",fontSize:18,fontWeight:'bold'}}>Show</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{alignItems:'center'}}>
+                                <Image style={{height:150,width:150,borderRadius:10,borderWidth:1,borderColor:this.state.textcolor}} source={{
+                                    uri:this.state.Img
+                                }} />
+                            </View>
                             <View style={{height:30}}/>
                             <Text style={{color:this.state.textcolor,fontSize:18,fontWeight:'bold'}}>Todays Date</Text>
                             <View style={{marginTop:10,height: 40,width: width-50,borderColor:this.state.textcolor,borderWidth:1,borderRadius:5,justifyContent:'center'}}>
@@ -134,7 +163,7 @@ export default class AddItem extends React.Component{
                         </View>
 
                         <View style={{justifyContent:'center',alignItems:'center',margin:30}}>
-                            <TouchableOpacity onPress={()=>this.Addlist(this.state.Name,this.state.Username,this.state.Date.split(" ").join("_"))} style={{height:40,width:width-200,backgroundColor:this.state.textcolor,justifyContent:'center',alignItems:'center',borderRadius:10}}>
+                            <TouchableOpacity onPress={()=>this.Addlist(this.state.Name,this.state.Username,this.state.Date.split(" ").join("_"),this.state.Img)} style={{height:40,width:width-200,backgroundColor:this.state.textcolor,justifyContent:'center',alignItems:'center',borderRadius:10}}>
                                 <Text style={{color:this.state.bdcolor,fontSize:20,fontWeight:'bold'}}>Create</Text>
                             </TouchableOpacity>
                         </View> 

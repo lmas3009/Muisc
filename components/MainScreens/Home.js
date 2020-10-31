@@ -5,6 +5,7 @@ import { color } from 'react-native-reanimated';
 import axios from 'axios';
 import Firebase from '../Firebase'
 import AsyncStorage from '@react-native-community/async-storage'
+import Heart from '../../assets/Icons/Heart.png'
 
 
 const width = Dimensions.get('window').width
@@ -57,7 +58,7 @@ const daily = [
   {
     id: "1",
     title: "Liked Music",
-    url: "https://upload.wikimedia.org/wikipedia/en/e/e3/Solo_%28Clean_Bandit_song%29.png"
+    url: "https://firebasestorage.googleapis.com/v0/b/ftd-play-music.appspot.com/o/Heart.png?alt=media&token=4ffe60b0-fe53-48d6-9cbe-7160737d5ef0"
   },
   {
     id: "2",
@@ -233,8 +234,8 @@ class Home extends Component {
     
 
     return (
-        <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
-          <View style={[styles.container,{backgroundColor:this.state.bdcolor}]}>
+        <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/> } style={[styles.container,{backgroundColor:this.state.bdcolor}]}>
+          <View >
         <View style={{marginTop: 40, marginLeft: 30, flexDirection:'row', alignItems:'center'}}>
           <Text style={[styles.text1,{color:this.state.textcolor}]}>Good </Text>
           <Text style={[styles.day,{color:this.state.textcolor}]}>{this.state.day} </Text>
@@ -249,6 +250,9 @@ class Home extends Component {
                   <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} key={item.id} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.name,Artwork: item.artwork,Code:item.code})}>
                     <View style={[styles.card1,{borderWidth: 1,borderColor:this.state.textcolor}]}>
                       <ImageBackground source={{uri: item.artwork}} style={styles.image} imageStyle={{ borderRadius: 10}} >
+                        <View style={{backgroundColor: "white",height: 20,width: 80,alignItems:'center',justifyContent:'center', borderRadius: 10,marginBottom: 5,marginRight: 5}}>
+                          <Text style = {{color:'black',fontSize: 12,fontWeight: 'bold'}} > {item.name.split("_")[0]} </Text>
+                        </View>
                         <View style={{backgroundColor: "white",height: 20,width: 60,alignItems:'center',justifyContent:'center', borderRadius: 10,marginBottom: 5,marginRight: 5}}>
                           <Text style = {{color:'black',fontSize: 12,fontWeight: 'bold'}} > Play ▶ </Text>
                         </View>
@@ -267,7 +271,7 @@ class Home extends Component {
               data = {daily}
               renderItem = {({item}) => (
                 <View style={{margin: 5}}>
-                  <TouchableOpacity style={[styles.dailymix,{borderColor:this.state.textcolor}]} onPress={()=> alert(item.title)}>
+                  <TouchableOpacity style={[styles.dailymix,{borderColor:this.state.textcolor}]} onPress={()=> this.props.navigation.navigate(item.title.split(" ").join(""))}>
                     <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
                       <Image source={{uri: item.url}} style={styles.image1}/>
                       <Text style={[styles.dailytext,{color:this.state.textcolor}]}>{item.title}</Text>
@@ -340,6 +344,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     alignItems:'flex-end',
     justifyContent:'flex-end',
+    flexDirection:'row'
   },
   card1:{
     margin: 5,
