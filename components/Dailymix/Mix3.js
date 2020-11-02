@@ -65,10 +65,22 @@ export default class Mix3 extends Component {
     }
 
     return (
-      <ScrollView style={{backgroundColor:this.state.bdcolor,flex:1}}>
-        <View style={{height: 65,width:width,backgroundColor:this.state.textcolor,borderBottomRightRadius:10,justifyContent:'center'}}>
-              <Text style={{color:this.state.bdcolor,fontSize: 23,fontWeight:'bold',marginLeft: 20}}>Daily Mix 3</Text>
-        </View>
+      <ScrollView style={{backgroundColor:this.state.bdcolor,flex:1}}
+      refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
+             <View style={{flexDirection:'row',alignItems:'center',margin:10}}>
+             <Image style={{height: 250,width: '100%',borderBottomLeftRadius: 50,borderBottomRightRadius: 50}}
+                  source={{
+                  uri:
+                      "https://firebasestorage.googleapis.com/v0/b/ftd-play-music.appspot.com/o/5.png?alt=media&token=e9d1b2c2-0ab1-46f0-946a-a14d5fc681b8",
+                  }}
+                  resizeMode="stretch" />
+                    <View style={{alignItems:'center',margin: 10,marginLeft:20}}>
+                        <TouchableOpacity style={{height: 45,width: 100,backgroundColor:'red',alignItems:'center',justifyContent:'center',borderRadius: 10,}} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: this.state.name,data: this.state.dataSource,id: 1,Artwork: this.state.artwork,Code:this.state.code})}>
+                            <Text style={{color:'white',fontSize: 20,fontWeight:'bold'}}>Play</Text>
+                        </TouchableOpacity>
+                    </View>
+             </View>
+      
         {this.state.dataSource==null ?
                 <View style={{justifyContent:'center',alignItems:'center',marginTop: 200}}>
                     <View style={styles.loader}>
@@ -78,11 +90,6 @@ export default class Mix3 extends Component {
                 </View>
                 :
                 <View>
-                    <View style={{alignItems:'center',margin: 10}}>
-                        <TouchableOpacity style={{height: 45,width: 100,backgroundColor:'red',alignItems:'center',justifyContent:'center',borderRadius: 10,}} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: this.state.name,data: this.state.dataSource,id: 1,Artwork: this.state.artwork,Code:this.state.code})}>
-                            <Text style={{color:'white',fontSize: 20,fontWeight:'bold'}}>Play</Text>
-                        </TouchableOpacity>
-                    </View>
                 <FlatList
                     horizontal={false} showsVerticalScrollIndicator={false}
                     keyExtractor = {(item) => item.id}

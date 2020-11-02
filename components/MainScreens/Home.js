@@ -63,27 +63,27 @@ const daily = [
   {
     id: "2",
     title: "Daily mix 3",
-    url: "https://upload.wikimedia.org/wikipedia/en/e/e3/Solo_%28Clean_Bandit_song%29.png"
+    url: "https://firebasestorage.googleapis.com/v0/b/ftd-play-music.appspot.com/o/5.png?alt=media&token=e9d1b2c2-0ab1-46f0-946a-a14d5fc681b8"
   },
   {
     id: "3",
     title: "Daily mix 1",
-    url: "https://upload.wikimedia.org/wikipedia/en/e/e3/Solo_%28Clean_Bandit_song%29.png"
+    url: "https://firebasestorage.googleapis.com/v0/b/ftd-play-music.appspot.com/o/3.png?alt=media&token=fc8d2bd0-a46c-4eaa-9bf9-0e170d90eadb"
   },
   {
     id: "4",
     title: "Daily mix 4",
-    url: "https://upload.wikimedia.org/wikipedia/en/e/e3/Solo_%28Clean_Bandit_song%29.png"
+    url: "https://firebasestorage.googleapis.com/v0/b/ftd-play-music.appspot.com/o/6.png?alt=media&token=d24b97ee-df61-4ae6-81e9-915ddb9b8e7b"
   },
   {
     id: "5",
     title: "Daily mix 2",
-    url: "https://upload.wikimedia.org/wikipedia/en/e/e3/Solo_%28Clean_Bandit_song%29.png"
+    url: "https://firebasestorage.googleapis.com/v0/b/ftd-play-music.appspot.com/o/4.png?alt=media&token=13181c6e-5fff-41dd-adcf-727ae09d74e6"
   },
   {
     id: "6",
     title: "Daily mix 5",
-    url: "https://upload.wikimedia.org/wikipedia/en/e/e3/Solo_%28Clean_Bandit_song%29.png"
+    url: "https://firebasestorage.googleapis.com/v0/b/ftd-play-music.appspot.com/o/7.png?alt=media&token=97c82a61-dfa6-49ec-9b10-dafc23d62bec"
   },
 ]
 
@@ -113,7 +113,8 @@ class Home extends Component {
           var feed = {
             Playlistname:item.val().PlaylistName,
             Date: item.val().Date,
-            Username: item.val().Username
+            Username: item.val().Username,
+            Image : item.val().Image
           }
           playlist.push(feed)
       })
@@ -129,7 +130,8 @@ class Home extends Component {
           var feed = {
             Playlistname:item.val().PlaylistName,
             Date: item.val().Date,
-            Username: item.val().Username
+            Username: item.val().Username,
+            Image : item.val().Image
           }
           playlist.push(feed)
       })
@@ -167,7 +169,8 @@ class Home extends Component {
             var feed = {
               Playlistname:item.val().PlaylistName,
               Date: item.val().Date,
-              Username: item.val().Username
+              Username: item.val().Username,
+              Image : item.val().Image
             }
             playlist.push(feed)
         })
@@ -193,8 +196,6 @@ class Home extends Component {
 
 
   render() {
-    
-
     axios.get("https://pulsating-sort.000webhostapp.com/Search/Bollywood.php")
     .then(response => {
             this.setState({
@@ -250,7 +251,7 @@ class Home extends Component {
                   <TouchableOpacity style={[styles.type,{borderColor:this.state.textcolor}]} key={item.id} onPress={()=> this.props.navigation.navigate('Viewscreen',{Name: item.name,Artwork: item.artwork,Code:item.code})}>
                     <View style={[styles.card1,{borderWidth: 1,borderColor:this.state.textcolor}]}>
                       <ImageBackground source={{uri: item.artwork}} style={styles.image} imageStyle={{ borderRadius: 10}} >
-                        <View style={{backgroundColor: "white",height: 20,width: 80,alignItems:'center',justifyContent:'center', borderRadius: 10,marginBottom: 5,marginRight: 5}}>
+                        <View style={{backgroundColor: "white",height: 20,alignItems:'center',justifyContent:'center', borderRadius: 10,marginBottom: 5,marginRight: 5}}>
                           <Text style = {{color:'black',fontSize: 12,fontWeight: 'bold'}} > {item.name.split("_")[0]} </Text>
                         </View>
                         <View style={{backgroundColor: "white",height: 20,width: 60,alignItems:'center',justifyContent:'center', borderRadius: 10,marginBottom: 5,marginRight: 5}}>
@@ -290,10 +291,10 @@ class Home extends Component {
                       keyExtractor = {(item) => item.id}
                       data = {playlist}
                       renderItem = {({item}) => (
-                        <TouchableOpacity onPress={()=> this.props.navigation.navigate('AddItem')} style={{height: 80,width:width-10,backgroundColor:this.state.textcolor,margin: 5,borderRadius: 10,justifyContent:'flex-start',alignItems:'center',flexDirection:"row"}}>
+                        <TouchableOpacity onPress={()=> this.props.navigation.navigate('Playlist',{Name:item.Playlistname,Date:item.Date.split("_").join(" "),Image:item.Image,Username:item.Username})} style={{height: 80,width:width-10,backgroundColor:this.state.textcolor,margin: 5,borderRadius: 10,justifyContent:'flex-start',alignItems:'center',flexDirection:"row"}}>
                           <View style={{height:60,width:60,borderColor:this.state.bdcolor,borderWidth:1,marginLeft: 10,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
                             <Image source={{
-                              uri: this.state.artwork
+                              uri: item.Image
                             }} style={{height: 60,width:60,borderRadius:10}}/>
                           </View>
                           <View style={{flexDirection:'column'}}>
@@ -343,8 +344,8 @@ const styles = StyleSheet.create({
     width: 150,
     resizeMode: "cover",
     alignItems:'flex-end',
-    justifyContent:'flex-end',
-    flexDirection:'row'
+    justifyContent:'space-between',
+    flexDirection:'column'
   },
   card1:{
     margin: 5,

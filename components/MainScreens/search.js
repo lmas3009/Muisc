@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Text, View ,StyleSheet,ScrollView,TouchableOpacity,TextInput,FlatList,Switch,ImageBackground} from 'react-native'
+import { Text, View ,StyleSheet,ScrollView,TouchableOpacity,TextInput,FlatList,Switch,ImageBackground,Dimensions,Image} from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Pop from '../../assets/pop.png'
 import Electronic from '../../assets/electronic.png'
 import Bollywood from '../../assets/bollywood.png'
@@ -19,8 +20,10 @@ import Sleep from '../../assets/sleep.png'
 import Soul from '../../assets/soul.png'
 import Gamming from '../../assets/gamming.png'
 import Jazz from '../../assets/jazz.png'
+import Firebase from '../Firebase'
+const width = Dimensions.get('window').width
 
-
+var searchdata =[]
 const Song_type=[
   { name:"Pop",id:1,bg:Pop },
   { name:"Electronic",id:2,bg:Electronic },
@@ -42,6 +45,9 @@ const Song_type=[
   { name:"Jazz" ,id:20,bg: Jazz},
 ]
 
+
+var new_search = []
+
 class Search extends Component {
 
   constructor(props){
@@ -50,9 +56,56 @@ class Search extends Component {
       day:'',
       bdcolor:'',
       textcolor:'',
-      textcolor1:''
+      textcolor1:'',
+      search:'',
+      data:null
+    }
+    Firebase.database().ref().child("Search").on('value',function(data){
+      searchdata=[]
+      data.forEach((item,key)=>{
+        var feed = {
+          Playlistname:item.val().PlaylistName,
+          Date: item.val().Date,
+          Username: item.val().Username,
+          Image : item.val().Image,
+          Name:item.key
+        }
+        searchdata.push(feed)
+      })
+    })
+  }
+
+  componentDidMount(){
+    Firebase.database().ref().child("Search").on('value',function(data){
+      searchdata=[]
+      data.forEach((item,key)=>{
+        var feed = {
+          Playlistname:item.val().PlaylistName,
+          Date: item.val().Date,
+          Username: item.val().Username,
+          Image : item.val().Image,
+          Name:item.key
+        }
+        searchdata.push(feed)
+      })
+    })
+  }
+
+  Searc = text =>{
+    this.setState({
+      search:text
+    })
+    new_search=[]
+    for(var i=0;i<searchdata.length;i++){
+      var name = searchdata[i].Playlistname
+      if(name.toString().includes(text)){
+        new_search.push(searchdata[i])
+        break
+      }
     }
   }
+
+  
   
 
   render() {
@@ -94,11 +147,16 @@ class Search extends Component {
               placeholder="Search ..."
               placeholderTextColor={this.state.bdcolor}
               underlineColorAndroid='transparent'
+              onChangeText={
+                this.Searc
+              }
             />
-            <FontAwesome name="search" color={this.state.bdcolor} size={20}/>
+            {this.state.search.length===0?<FontAwesome name="search" color={this.state.bdcolor} size={20}/>:<MaterialIcons name="cancel" onPress={()=>this.setState({
+              search:''
+            })} color={this.state.bdcolor} size={20}/>}
           </View>
         </View>
-        <View style={styles.allsong}>
+        {this.state.search.length===0 ?<View style={styles.allsong}>
           <Text style={[styles.allsong_title,{color:this.state.textcolor}]}>Browse all</Text>
           <View style={styles.song_type_list}>
           <FlatList
@@ -118,7 +176,28 @@ class Search extends Component {
                 )}
             />
           </View>
-        </View>
+        </View>:
+          <View style={{margin:20}}>
+            <FlatList
+              numColumns = {2}
+              keyExtractor = {(item) => item.id}
+              data = {new_search}
+              renderItem = {({item}) => (
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate('Playlist',{Name:item.Playlistname,Date:item.Date.split("_").join(" "),Image:item.Image,Username:item.Username})} style={{height: 80,width:width-10,backgroundColor:this.state.textcolor,margin: 5,borderRadius: 10,justifyContent:'flex-start',alignItems:'center',flexDirection:"row"}}>
+                          <View style={{height:60,width:60,borderColor:this.state.bdcolor,borderWidth:1,marginLeft: 10,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
+                            <Image source={{
+                              uri: item.Image
+                            }} style={{height: 60,width:60,borderRadius:10}}/>
+                          </View>
+                          <View style={{flexDirection:'column'}}>
+                            <Text style={{color:this.state.bdcolor,fontSize: 18,fontWeight:'bold',marginLeft:20}}>{item.Playlistname}</Text>
+                            <Text style={{color:this.state.bdcolor,fontSize: 15,fontWeight:'w700',marginLeft:20}}>{item.Date.split("_").join(" ")}</Text>
+                          </View>
+                      </TouchableOpacity>
+              )}
+              />
+          </View>
+          }
       </View>
     )
   }

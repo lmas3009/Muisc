@@ -1,7 +1,8 @@
 import React from 'react' 
-import {View,Text} from 'react-native'
+import {View,Text,Image} from 'react-native'
 import Firebase from '../Firebase'
 import Asyncstorage from '@react-native-community/async-storage'
+import applogo from '../../assets/applogo1.png'
 
 export default class Splashscreen extends React.Component{
 
@@ -38,7 +39,7 @@ export default class Splashscreen extends React.Component{
         
         try{
         Firebase.auth().onAuthStateChanged((user)=>{
-            if(user!=null || this._getdata() ){
+            if(user){
                 this.props.navigation.navigate("Bottomnav")
                 this._storedata(user.email)
                 console.log("dsfkghdsfkg")
@@ -57,8 +58,8 @@ export default class Splashscreen extends React.Component{
     
     render(){
         return(
-            <View style={{alignItems:'center',justifyContent:'center',flex:1}}>
-                <Text style={{color:'black'}}>Welcome</Text>
+            <View style={{alignItems:'center',justifyContent:'center',flex:1,backgroundColor:'#ffe0f0'}}>
+                <Image source={applogo} style={{height:250,width:250}}/>
             </View>
             )
     }

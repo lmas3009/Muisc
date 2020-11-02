@@ -21,9 +21,27 @@ export default class Mix1 extends Component {
       artwork: 'https://forum.byjus.com/wp-content/themes/qaengine/img/default-thumbnail.jpg',
       dataSource:null,
       loading: true,
+      refreshing:false
     }
   }
 
+
+  _onRefresh = () => {
+    this.setState({refreshing:true})
+    axios.get("https://music-application-ftd.000webhostapp.com/DailyMix/day1.php")
+    .then(response => {
+            this.setState({
+            dataSource: response.data,
+            lodaing : false
+            })
+            this.setState({refreshing:false})
+    })
+    .catch(error => {
+        alert(error);
+    });
+
+
+  }
   componentDidMount(){
     axios.get("https://music-application-ftd.000webhostapp.com/DailyMix/day1.php")
             .then(response => {
@@ -65,10 +83,22 @@ export default class Mix1 extends Component {
     }
 
     return (
-      <ScrollView style={{backgroundColor:this.state.bdcolor,flex:1}}>
-        <View style={{height: 65,width:width,backgroundColor:this.state.textcolor,borderBottomRightRadius:10,justifyContent:'center'}}>
-              <Text style={{color:this.state.bdcolor,fontSize: 23,fontWeight:'bold',marginLeft: 20}}>Daily Mix 1</Text>
-        </View>
+      <ScrollView style={{backgroundColor:this.state.bdcolor,flex:1}} 
+      refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
+             <View style={{flexDirection:'row',alignItems:'center',margin:10}}>
+             <Image style={{height: 200,width: 200,borderRadius:15,resizeMode:'cover'}}
+                    source={{
+                    uri:
+                        "https://firebasestorage.googleapis.com/v0/b/ftd-play-music.appspot.com/o/3.png?alt=media&token=fc8d2bd0-a46c-4eaa-9bf9-0e170d90eadb",
+                    }}
+                    resizeMode="stretch" />
+                    <View style={{alignItems:'center',margin: 10,marginLeft:20}}>
+                        <TouchableOpacity style={{height: 45,width: 100,backgroundColor:'red',alignItems:'center',justifyContent:'center',borderRadius: 10,}} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: this.state.name,data: this.state.dataSource,id: 1,Artwork: this.state.artwork,Code:this.state.code})}>
+                            <Text style={{color:'white',fontSize: 20,fontWeight:'bold'}}>Play</Text>
+                        </TouchableOpacity>
+                    </View>
+             </View>
+             <View style={{height:1,marginLeft:10,marginRight:10,backgroundColor: this.state.textcolor}}/>
         {this.state.dataSource==null ?
                 <View style={{justifyContent:'center',alignItems:'center',marginTop: 200}}>
                     <View style={styles.loader}>
@@ -77,12 +107,7 @@ export default class Mix1 extends Component {
                     <Text style={{color:this.state.textcolor}}>Fetching Data</Text>
                 </View>
                 :
-                <View>
-                    <View style={{alignItems:'center',margin: 10}}>
-                        <TouchableOpacity style={{height: 45,width: 100,backgroundColor:'red',alignItems:'center',justifyContent:'center',borderRadius: 10,}} onPress={()=> this.props.navigation.navigate('Musicplayer',{Name: this.state.name,data: this.state.dataSource,id: 1,Artwork: this.state.artwork,Code:this.state.code})}>
-                            <Text style={{color:'white',fontSize: 20,fontWeight:'bold'}}>Play</Text>
-                        </TouchableOpacity>
-                    </View>
+                <View style={{flex:1}}>
                 <FlatList
                     horizontal={false} showsVerticalScrollIndicator={false}
                     keyExtractor = {(item) => item.id}

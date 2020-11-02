@@ -18,6 +18,7 @@ class Library extends Component {
       bdcolor:'',
       textcolor:'',
       artwork: 'https://forum.byjus.com/wp-content/themes/qaengine/img/default-thumbnail.jpg',
+      refreshing:false
     }
 
     var email = Firebase.auth().currentUser.email
@@ -30,13 +31,37 @@ class Library extends Component {
           var feed = {
             Playlistname:item.val().PlaylistName,
             Date: item.val().Date,
-            Username: item.val().Username
+            Username: item.val().Username,
+            Image:item.val().Image,
           }
           playlist.push(feed)
         }
       })
     })
   }
+
+   _onRefresh = () => {
+          this.setState({refreshing:true})
+          var email = Firebase.auth().currentUser.email
+          var email1 = email.split("@").join("_")
+          var email2 = email1.split(".").join("-")
+          Firebase.database().ref().child("Search").on('value',function(data){
+            playlist=[]
+            data.forEach((item,key)=>{
+              if(item.val().Email==email2){
+                var feed = {
+                  Playlistname:item.val().PlaylistName,
+                  Date: item.val().Date,
+                  Username: item.val().Username,
+                  Image:item.val().Image,
+                }
+                playlist.push(feed)
+              }
+            })
+          })
+          this.setState({refreshing:false})
+      }
+
 
   componentDidMount(){
     var email = Firebase.auth().currentUser.email
@@ -49,7 +74,8 @@ class Library extends Component {
           var feed = {
             Playlistname:item.val().PlaylistName,
             Date: item.val().Date,
-            Username: item.val().Username
+            Username: item.val().Username,
+            Image:item.val().Image,
           }
           playlist.push(feed)
         }
@@ -85,7 +111,7 @@ class Library extends Component {
     }
 
     return (
-      <ScrollView style={{backgroundColor:this.state.bdcolor,flex:1}}>
+      <ScrollView style={{backgroundColor:this.state.bdcolor,flex:1}} refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
         <View style={{height: 65,width:width,backgroundColor:this.state.textcolor,borderBottomRightRadius:10,justifyContent:'center'}}>
               <Text style={{color:this.state.bdcolor,fontSize: 23,fontWeight:'bold',marginLeft: 20}}>Library</Text>
         </View>
@@ -118,10 +144,10 @@ class Library extends Component {
               keyExtractor = {(item) => item.id}
               data = {playlist}
               renderItem = {({item}) => (
-                <TouchableOpacity onPress={()=> this.props.navigation.navigate('AddItem')} style={{height: 80,width:width-10,backgroundColor:this.state.textcolor,margin: 5,borderRadius: 10,justifyContent:'flex-start',alignItems:'center',flexDirection:"row"}}>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate('Playlist',{Name:item.Playlistname,Date:item.Date.split("_").join(" "),Image:item.Image,Username:item.Username})} style={{height: 80,width:width-10,backgroundColor:this.state.textcolor,margin: 5,borderRadius: 10,justifyContent:'flex-start',alignItems:'center',flexDirection:"row"}}>
                   <View style={{height:60,width:60,borderColor:this.state.bdcolor,borderWidth:1,marginLeft: 10,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
                     <Image source={{
-                      uri: this.state.artwork
+                      uri: item.Image
                     }} style={{height: 60,width:60,borderRadius:10}}/>
                   </View>
                   <View style={{flexDirection:'column'}}>
