@@ -25,6 +25,8 @@ import Dailymix2 from './components/Dailymix/Mix2'
 import Dailymix3 from './components/Dailymix/Mix3'
 import Dailymix4 from './components/Dailymix/Mix4'
 import Dailymix5 from './components/Dailymix/Mix5'
+import Playlist from './components/MainScreens/Playlist'
+import Addtoplay from './components/MainScreens/Addtoplay'
 
 const Tab  = createBottomTabNavigator();
 
@@ -68,6 +70,19 @@ function Bottomnav(){
           ),
         }}
       />
+      {/* <Tab.Screen
+        name="Musicplayer"
+        component={Musicplayer}
+        options={{
+          tabBarIcon: ({focused, color}) => (
+            <Icon
+              name={focused ? 'view-dashboard' : 'view-dashboard-outline'}
+              size={28}
+              color={color}
+            />
+          ),
+        }}
+      /> */}
       <Tab.Screen
         name="Library"
         component={Library}
@@ -124,6 +139,8 @@ function App() {
         <Stack.Screen name="Dailymix3" component={Dailymix3} options={{headerShown: false}} />
         <Stack.Screen name="Dailymix4" component={Dailymix4} options={{headerShown: false}} />
         <Stack.Screen name="Dailymix5" component={Dailymix5} options={{headerShown: false}} />
+        <Stack.Screen name="Playlist" component={Playlist} options={{headerShown: false}} />
+        <Stack.Screen name="Addtoplay" component={Addtoplay} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -27,6 +27,7 @@ export default class ProgressBar1 extends TrackPlayer.ProgressComponent {
   };
 
   render(){
+    console.log(TrackPlayer);
   return (
     <View style={styles.progress2}>
       <View style={styles.progress1}>

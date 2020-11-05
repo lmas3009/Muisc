@@ -68,6 +68,13 @@ export default class MusicPlayer extends React.Component {
         new_data.push(item.val().title)
       })
     })
+    Firebase.database().ref().child(email2).child("Playing").set({
+      Data:"'"+JSON.stringify(data)+"'",
+      id:id1,
+      artwork:data[id1].artwork,
+      artist:data[id1].artist,
+      title:data[id1].title
+    })
     this.setState({
       datasource:data,
       // artist: data[this.state.songindex].artist,
@@ -90,18 +97,20 @@ export default class MusicPlayer extends React.Component {
       isPlayerReady:true
     })
     TrackPlayer.updateOptions({
-      ratingType: TrackPlayer.RATING_5_STARS,
       stopWithApp: false,
       capabilities: [
           TrackPlayer.CAPABILITY_PLAY,
           TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_STOP
+          TrackPlayer.CAPABILITY_STOP,
+          TrackPlayer.CAPABILITY_JUMP_FORWARD
       ],
       
       compactCapabilities: [
         TrackPlayer.CAPABILITY_PLAY,
         TrackPlayer.CAPABILITY_PAUSE,
-        TrackPlayer.CAPABILITY_STOP
+        TrackPlayer.CAPABILITY_STOP,
+        TrackPlayer.CAPABILITY_JUMP_FORWARD,
+        TrackPlayer.CAPABILITY_JUMP_FORWARD
       ]
   
     });
@@ -126,9 +135,7 @@ export default class MusicPlayer extends React.Component {
           artwork: this.state.datasource[id1-1].artwork,
           title: this.state.datasource[id1-1].title
         })
-        console.log(id1)
         TrackPlayer.play();
-        console.log("track changes")
       })
       .catch((e) => {
         console.log("erroe")
@@ -172,7 +179,6 @@ goNext(){
   try{
     TrackPlayer.skip(this.state.datasource[this.state.index].id)
   .then((_) => {
-    console.log("track changes")
     this.setState({
       index: this.state.index+1,
       artist: this.state.datasource[this.state.index].artist,
@@ -196,10 +202,8 @@ goNext(){
 
 goPrv(){
   try{
-    console.log(this.state.index)
     TrackPlayer.skip(this.state.datasource[this.state.index].id)
       .then((_) => {
-        console.log("track changes")
         this.setState({
           index: this.state.index-1,
           artist: this.state.datasource[this.state.index].artist,
